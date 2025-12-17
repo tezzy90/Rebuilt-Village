@@ -3,67 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rebuilt Village - Film Education</title>
-    <meta name="description" content="Empowering Ocoee's youth through film education. A 501(c)(3) nonprofit organization." />
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Primary Meta Tags -->
+    <title>Rebuilt Village - Film Education for Ocoee Youth</title>
+    <meta name="title" content="Rebuilt Village - Film Education for Ocoee Youth" />
+    <meta name="description" content="Empowering Ocoee's youth through professional film education. A 501(c)(3) nonprofit organization providing cinema cameras, mentorships, and production labs." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rebuiltvillage.org/" />
+    <meta property="og:title" content="Rebuilt Village - Film Education for Ocoee Youth" />
+    <meta property="og:description" content="Empowering Ocoee's youth through professional film education. A 501(c)(3) nonprofit organization." />
+    <meta property="og:image" content="https://rebuiltvillage.org/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://rebuiltvillage.org/" />
+    <meta property="twitter:title" content="Rebuilt Village - Film Education for Ocoee Youth" />
+    <meta property="twitter:description" content="Empowering Ocoee's youth through professional film education. A 501(c)(3) nonprofit organization." />
+    <meta property="twitter:image" content="https://rebuiltvillage.org/og-image.jpg" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Courier+Prime&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#0d9488', // Teal 600 - slightly brighter for dark mode
-              secondary: '#f97316', // Orange 500
-              dark: '#0f172a', // Slate 900
-              paper: '#f1f5f9', // Slate 100
-              'film-black': '#020617', // Very dark slate
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
-              mono: ['"Courier Prime"', 'Courier New', 'monospace'],
-            }
-          }
-        }
-      }
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Rebuilt Village",
+      "description": "Film education nonprofit empowering Ocoee's youth through professional cinema training",
+      "url": "https://rebuiltvillage.org",
+      "logo": "https://rebuiltvillage.org/logo.png",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Ocoee",
+        "addressRegion": "FL",
+        "postalCode": "34761",
+        "addressCountry": "US"
+      },
+      "sameAs": [
+        "https://instagram.com/rebuiltvillage",
+        "https://facebook.com/rebuiltvillage"
+      ],
+      "areaServed": "Ocoee, FL"
+    }
     </script>
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #020617; /* film-black */
-        color: #e2e8f0; /* slate-200 */
-      }
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'Playfair Display', serif;
-      }
-      
-      /* Film Grain Overlay */
-      .film-grain {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 9999;
-        opacity: 0.05;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      }
-
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0f172a; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #334155; 
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #475569; 
-      }
-    </style>
+    
   <script type="importmap">
 {
   "imports": {
@@ -75,7 +66,6 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div class="film-grain"></div>

@@ -1,19 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { View } from './types';
-import { Home } from './pages/Home';
-import { About } from './pages/About';
-import { StorySpark } from './pages/StorySpark';
-import { Donate } from './pages/Donate';
-import { Blog } from './pages/Blog';
-import { Events } from './pages/Events';
-import { Privacy } from './pages/Privacy';
-import { Terms } from './pages/Terms';
-import { Board } from './pages/Board';
-import { Documents } from './pages/Documents';
-import { Menu, X, Instagram, Facebook, Mail, Film, Check, Clapperboard } from 'lucide-react';
+import React, { useState, Suspense, lazy } from 'react';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Menu, X, Instagram, Facebook, Mail, Check, Clapperboard } from 'lucide-react';
+import { Dialog } from '@headlessui/react';
 import { Button } from './components/Button';
+import { LoadingSpinner } from './components/LoadingSpinner';
+import { useToggle } from './hooks/useToggle';
 
-// Placeholder components for views not yet fully implemented in this iteration
+// Lazy load pages for code splitting
+const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
+const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
+const StorySpark = lazy(() => import('./pages/StorySpark').then(m => ({ default: m.StorySpark })));
+const Donate = lazy(() => import('./pages/Donate').then(m => ({ default: m.Donate })));
+const Blog = lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
+const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
+const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
+const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
+const Board = lazy(() => import('./pages/Board').then(m => ({ default: m.Board })));
+const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
+
+// Programs placeholder component
 const Programs = () => (
   <div className="py-20 text-center container mx-auto text-slate-200">
     <h2 className="text-3xl font-serif italic mb-12">Our Programs</h2>
@@ -36,23 +41,24 @@ const Programs = () => (
   </div>
 );
 
+// Contact placeholder component  
 const Contact = () => (
   <div className="py-20 container mx-auto px-4 max-w-3xl">
     <h2 className="text-4xl font-serif italic mb-12 text-center text-white">Contact The Studio</h2>
     <form className="bg-slate-900 p-10 border border-slate-800 space-y-8">
       <div className="grid md:grid-cols-2 gap-8">
         <div>
-          <label className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Name</label>
-          <input type="text" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="Your Name" />
+          <label htmlFor="contact-name" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Name</label>
+          <input id="contact-name" type="text" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="Your Name" />
         </div>
         <div>
-          <label className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Email</label>
-          <input type="email" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="email@address.com" />
+          <label htmlFor="contact-email" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Email</label>
+          <input id="contact-email" type="email" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="email@address.com" />
         </div>
       </div>
       <div>
-        <label className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Subject</label>
-        <select className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif">
+        <label htmlFor="contact-subject" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Subject</label>
+        <select id="contact-subject" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif">
           <option>General Inquiry</option>
           <option>Program Enrollment</option>
           <option>Volunteering</option>
@@ -60,14 +66,15 @@ const Contact = () => (
         </select>
       </div>
       <div>
-        <label className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Message</label>
-        <textarea rows={4} className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="Type your message..."></textarea>
+        <label htmlFor="contact-message" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Message</label>
+        <textarea id="contact-message" rows={4} className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="Type your message..."></textarea>
       </div>
       <Button className="w-full" variant="secondary">Send Message</Button>
     </form>
   </div>
 );
 
+// Newsletter Form Component
 const NewsletterForm = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -96,7 +103,9 @@ const NewsletterForm = () => {
       <h4 className="text-white font-serif italic text-lg mb-4">The Call Sheet</h4>
       <p className="mb-4 text-xs font-mono text-slate-500 uppercase tracking-wide">Get casting calls & news.</p>
       <form onSubmit={handleSubmit} className="space-y-3">
+        <label htmlFor="newsletter-email" className="sr-only">Email Address</label>
         <input
+          id="newsletter-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -112,54 +121,50 @@ const NewsletterForm = () => {
   );
 };
 
+// Navigation items type
+interface NavItem {
+  label: string;
+  path: string;
+}
+
 export default function App() {
-  const [currentView, setCurrentView] = useState<View>(View.HOME);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [filmGrainEnabled, toggleFilmGrain] = useToggle(true);
+  const location = useLocation();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setIsMobileMenuOpen(false);
-  }, [currentView]);
-
-  const navItems = [
-    { label: 'Home', view: View.HOME },
-    { label: 'About', view: View.ABOUT },
-    { label: 'Programs', view: View.PROGRAMS },
-    { label: 'Events', view: View.EVENTS },
-    { label: 'Blog', view: View.BLOG },
-    { label: 'AI Studio', view: View.STORY_SPARK },
-    { label: 'Contact', view: View.CONTACT },
+  // Navigation items
+  const navItems: NavItem[] = [
+    { label: 'Home', path: '/' },
+    { label: 'About', path: '/about' },
+    { label: 'Programs', path: '/programs' },
+    { label: 'Events', path: '/events' },
+    { label: 'Blog', path: '/blog' },
+    { label: 'AI Studio', path: '/ai-studio' },
+    { label: 'Contact', path: '/contact' },
   ];
-
-  const renderView = () => {
-    switch (currentView) {
-      case View.HOME: return <Home setView={setCurrentView} />;
-      case View.ABOUT: return <About />;
-      case View.DONATE: return <Donate />;
-      case View.STORY_SPARK: return <StorySpark />;
-      case View.PROGRAMS: return <Programs />;
-      case View.BLOG: return <Blog />;
-      case View.EVENTS: return <Events />;
-      case View.CONTACT: return <Contact />;
-      case View.PRIVACY: return <Privacy />;
-      case View.TERMS: return <Terms />;
-      case View.BOARD: return <Board />;
-      case View.DOCUMENTS: return <Documents />;
-      default: return <Home setView={setCurrentView} />;
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-film-black text-slate-200 font-sans selection:bg-primary selection:text-white">
+      {/* Film Grain Toggle - hidden but accessible */}
+      <button
+        onClick={toggleFilmGrain}
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-slate-900 focus:text-white focus:border focus:border-slate-700"
+        aria-label={filmGrainEnabled ? "Disable film grain effect" : "Enable film grain effect"}
+      >
+        Toggle Film Grain
+      </button>
+
+      {/* Film Grain Overlay */}
+      <div className={`film-grain ${filmGrainEnabled ? '' : 'disabled'}`}></div>
 
       {/* Navigation */}
       <header className="sticky top-0 z-50 bg-film-black/90 backdrop-blur-md border-b border-slate-800">
         <div className="container mx-auto px-4 h-24 flex items-center justify-between">
-
           {/* Logo */}
-          <div
-            className="flex items-center space-x-3 cursor-pointer group"
-            onClick={() => setCurrentView(View.HOME)}
+          <Link
+            to="/"
+            className="flex items-center space-x-3 group"
+            aria-label="Rebuilt Village Home"
           >
             <div className="border-2 border-white p-2 group-hover:bg-white group-hover:text-black transition-colors duration-300">
               <Clapperboard size={24} />
@@ -168,61 +173,103 @@ export default function App() {
               <span className="block text-2xl font-serif font-bold text-white leading-none italic">REBUILT</span>
               <span className="block text-[10px] font-mono font-medium text-primary leading-none tracking-[0.3em] mt-1">VILLAGE</span>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden xl:flex items-center space-x-8">
+          <nav className="hidden xl:flex items-center space-x-8" aria-label="Main navigation">
             {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setCurrentView(item.view)}
-                className={`text-xs font-mono uppercase tracking-widest transition-all hover:text-white ${currentView === item.view
-                  ? 'text-primary border-b border-primary pb-1'
-                  : 'text-slate-500'
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-xs font-mono uppercase tracking-widest transition-all hover:text-white ${location.pathname === item.path
+                    ? 'text-primary border-b border-primary pb-1'
+                    : 'text-slate-500'
                   }`}
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
-            <Button size="sm" variant="primary" onClick={() => setCurrentView(View.DONATE)}>
-              Donate
-            </Button>
+            <Link to="/donate">
+              <Button size="sm" variant="primary">
+                Donate
+              </Button>
+            </Link>
           </nav>
 
           {/* Mobile Menu Toggle */}
           <button
             className="xl:hidden text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile Nav Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="xl:hidden bg-black border-b border-slate-800 py-6 px-4 space-y-6 absolute w-full h-screen z-50">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setCurrentView(item.view)}
-                className={`block w-full text-center py-3 text-xl font-serif italic ${currentView === item.view ? 'text-primary' : 'text-slate-400'
-                  }`}
-              >
-                {item.label}
-              </button>
-            ))}
-            <div className="pt-8 flex justify-center">
-              <Button className="w-full max-w-xs" variant="primary" onClick={() => setCurrentView(View.DONATE)}>
-                Donate
-              </Button>
-            </div>
+        {/* Mobile Nav Dialog */}
+        <Dialog
+          open={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          className="xl:hidden relative z-50"
+        >
+          <div className="fixed inset-0 bg-black/90" aria-hidden="true" />
+          <div className="fixed inset-0 flex items-start justify-end">
+            <Dialog.Panel className="w-full max-w-sm bg-black border-l border-slate-800 h-full mobile-menu-enter">
+              <div className="p-6 space-y-6">
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-white"
+                    aria-label="Close mobile menu"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                <nav aria-label="Mobile navigation">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`block py-4 text-xl font-serif italic ${location.pathname === item.path ? 'text-primary' : 'text-slate-400'
+                        }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <div className="pt-8">
+                    <Link to="/donate" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full" variant="primary">
+                        Donate
+                      </Button>
+                    </Link>
+                  </div>
+                </nav>
+              </div>
+            </Dialog.Panel>
           </div>
-        )}
+        </Dialog>
       </header>
 
       {/* Main Content */}
       <main className="flex-grow">
-        {renderView()}
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/programs" element={<Programs />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/ai-studio" element={<StorySpark />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/board" element={<Board />} />
+            <Route path="/documents" element={<Documents />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -234,41 +281,62 @@ export default function App() {
               Cinema is an empathy machine. We are tuning the engine.
             </p>
             <div className="flex space-x-6 text-white">
-              <a href="#" className="hover:text-primary transition-colors"><Instagram size={20} /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Facebook size={20} /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Mail size={20} /></a>
+              <a
+                href="https://instagram.com/rebuiltvillage"
+                className="hover:text-primary transition-colors"
+                aria-label="Follow us on Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Instagram size={20} />
+              </a>
+              <a
+                href="https://facebook.com/rebuiltvillage"
+                className="hover:text-primary transition-colors"
+                aria-label="Follow us on Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Facebook size={20} />
+              </a>
+              <a
+                href="mailto:info@rebuiltvillage.org"
+                className="hover:text-primary transition-colors"
+                aria-label="Email us"
+              >
+                <Mail size={20} />
+              </a>
             </div>
           </div>
 
           <div>
             <h4 className="text-white font-serif italic text-lg mb-6">Index</h4>
             <ul className="space-y-3 font-mono text-xs uppercase tracking-widest">
-              <li><button onClick={() => setCurrentView(View.ABOUT)} className="hover:text-primary transition-colors">About</button></li>
-              <li><button onClick={() => setCurrentView(View.PROGRAMS)} className="hover:text-primary transition-colors">Programs</button></li>
-              <li><button onClick={() => setCurrentView(View.EVENTS)} className="hover:text-primary transition-colors">Calendar</button></li>
-              <li><button onClick={() => setCurrentView(View.BLOG)} className="hover:text-primary transition-colors">Journal</button></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">About</Link></li>
+              <li><Link to="/programs" className="hover:text-primary transition-colors">Programs</Link></li>
+              <li><Link to="/events" className="hover:text-primary transition-colors">Calendar</Link></li>
+              <li><Link to="/blog" className="hover:text-primary transition-colors">Journal</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-serif italic text-lg mb-6">Studio Info</h4>
-            <ul className="space-y-3 font-mono text-xs uppercase tracking-widest">
-              <li>Ocoee, FL 34761</li>
-              <li>info@rebuiltvillage.org</li>
-              <li className="pt-4 text-slate-600">
-                EIN: 12-3456789<br />
+            <address className="not-italic space-y-3 font-mono text-xs uppercase tracking-widest">
+              <p>Ocoee, FL 34761</p>
+              <p><a href="mailto:info@rebuiltvillage.org" className="hover:text-primary transition-colors">info@rebuiltvillage.org</a></p>
+              <p className="pt-4 text-slate-600">
                 501(c)(3) Nonprofit
-              </li>
-            </ul>
+              </p>
+            </address>
           </div>
 
           <div>
             <h4 className="text-white font-serif italic text-lg mb-6">Transparency</h4>
             <ul className="space-y-3 font-mono text-xs uppercase tracking-widest">
-              <li><button onClick={() => setCurrentView(View.BOARD)} className="hover:text-primary transition-colors">Board</button></li>
-              <li><button onClick={() => setCurrentView(View.DOCUMENTS)} className="hover:text-primary transition-colors">Documents</button></li>
-              <li><button onClick={() => setCurrentView(View.PRIVACY)} className="hover:text-primary transition-colors">Privacy</button></li>
-              <li><button onClick={() => setCurrentView(View.TERMS)} className="hover:text-primary transition-colors">Terms</button></li>
+              <li><Link to="/board" className="hover:text-primary transition-colors">Board</Link></li>
+              <li><Link to="/documents" className="hover:text-primary transition-colors">Documents</Link></li>
+              <li><Link to="/privacy" className="hover:text-primary transition-colors">Privacy</Link></li>
+              <li><Link to="/terms" className="hover:text-primary transition-colors">Terms</Link></li>
             </ul>
           </div>
 

@@ -1,29 +1,25 @@
 import React from 'react';
-import { View } from '../types';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Section } from '../components/Section';
-import { Camera, Heart, Users, Play, Award, Film } from 'lucide-react';
+import { Play, Film } from 'lucide-react';
 
-interface HomeProps {
-  setView: (view: View) => void;
-}
-
-export const Home: React.FC<HomeProps> = ({ setView }) => {
+export const Home: React.FC = () => {
   return (
     <>
       {/* Cinematic Hero Section */}
       <div className="relative h-screen min-h-[600px] bg-black text-white overflow-hidden flex items-center">
         <div className="absolute inset-0 z-0">
-           <img 
-            src="https://picsum.photos/1920/1080?grayscale&blur=2" 
-            alt="Students filming" 
+          <img
+            src="https://picsum.photos/1920/1080?grayscale&blur=2"
+            alt="Students filming"
             className="w-full h-full object-cover opacity-50 scale-105 animate-[pulse_10s_ease-in-out_infinite]"
           />
         </div>
         {/* Vignette Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-film-black via-transparent to-film-black/80 z-10"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-black/40 to-black/90 z-10"></div>
-        
+
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block border-y border-white/20 py-2 px-6 mb-8 backdrop-blur-sm">
@@ -36,12 +32,16 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
               We don't just teach film. We rebuild perspectives. Empowering the next generation of visual storytellers.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Button variant="primary" size="lg" onClick={() => setView(View.PROGRAMS)}>
-                Start Creating
-              </Button>
-              <Button variant="outline" size="lg" onClick={() => setView(View.ABOUT)}>
-                Manifesto
-              </Button>
+              <Link to="/programs">
+                <Button variant="primary" size="lg">
+                  Start Creating
+                </Button>
+              </Link>
+              <Link to="/about">
+                <Button variant="outline" size="lg">
+                  Manifesto
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 relative">
             <div className="absolute -top-10 -left-10 w-32 h-32 border-t-2 border-l-2 border-primary/30 hidden md:block"></div>
-            <h2 className="text-4xl md:text-6xl font-serif mb-8 text-white">The Art of<br/><span className="italic text-slate-500">Seeing.</span></h2>
+            <h2 className="text-4xl md:text-6xl font-serif mb-8 text-white">The Art of<br /><span className="italic text-slate-500">Seeing.</span></h2>
             <p className="text-lg text-slate-400 mb-8 leading-relaxed font-light">
               Rebuilt Village isn't about rote learning. It's about finding the narrative in the noise. We provide professional-grade cinema cameras, lighting, and post-production suites to students who have the vision but need the tools.
             </p>
@@ -89,28 +89,30 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
                 </li>
               ))}
             </ul>
-            <Button variant="outline" onClick={() => setView(View.ABOUT)}>Read The Story</Button>
+            <Link to="/about">
+              <Button variant="outline">Read The Story</Button>
+            </Link>
           </div>
-          
+
           <div className="lg:col-span-7 relative">
             {/* Artistic Video Placeholder */}
             <div className="relative aspect-video bg-black border border-slate-700 p-2 group cursor-pointer overflow-hidden">
-               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none z-10"></div>
-               <img src="https://picsum.photos/seed/film/800/450?grayscale" alt="Showcase Reel" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 filter grayscale group-hover:grayscale-0" />
-               
-               <div className="absolute inset-0 flex items-center justify-center z-20">
-                 <div className="w-24 h-24 border border-white/30 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-90 transition-transform duration-500">
-                    <Play size={32} className="text-white fill-white ml-2" />
-                 </div>
-               </div>
-               
-               {/* Film Strip Accents */}
-               <div className="absolute top-0 left-0 bottom-0 w-8 bg-black z-20 flex flex-col justify-between py-2 border-r border-slate-800">
-                  {[...Array(8)].map((_, i) => <div key={i} className="w-4 h-6 bg-slate-900 mx-auto rounded-sm"></div>)}
-               </div>
-               <div className="absolute top-0 right-0 bottom-0 w-8 bg-black z-20 flex flex-col justify-between py-2 border-l border-slate-800">
-                  {[...Array(8)].map((_, i) => <div key={i} className="w-4 h-6 bg-slate-900 mx-auto rounded-sm"></div>)}
-               </div>
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none z-10"></div>
+              <img src="https://picsum.photos/seed/film/800/450?grayscale" alt="Showcase Reel" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 filter grayscale group-hover:grayscale-0" />
+
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <div className="w-24 h-24 border border-white/30 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-90 transition-transform duration-500">
+                  <Play size={32} className="text-white fill-white ml-2" />
+                </div>
+              </div>
+
+              {/* Film Strip Accents */}
+              <div className="absolute top-0 left-0 bottom-0 w-8 bg-black z-20 flex flex-col justify-between py-2 border-r border-slate-800">
+                {[...Array(8)].map((_, i) => <div key={i} className="w-4 h-6 bg-slate-900 mx-auto rounded-sm"></div>)}
+              </div>
+              <div className="absolute top-0 right-0 bottom-0 w-8 bg-black z-20 flex flex-col justify-between py-2 border-l border-slate-800">
+                {[...Array(8)].map((_, i) => <div key={i} className="w-4 h-6 bg-slate-900 mx-auto rounded-sm"></div>)}
+              </div>
             </div>
           </div>
         </div>
@@ -126,12 +128,16 @@ export const Home: React.FC<HomeProps> = ({ setView }) => {
             Be part of the production. Support the arts in Ocoee.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Button variant="secondary" size="lg" onClick={() => setView(View.DONATE)}>
-              Executive Producer (Donate)
-            </Button>
-            <Button variant="ghost" size="lg" onClick={() => setView(View.CONTACT)}>
-              Join Crew (Volunteer)
-            </Button>
+            <Link to="/donate">
+              <Button variant="secondary" size="lg">
+                Executive Producer (Donate)
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button variant="ghost" size="lg">
+                Join Crew (Volunteer)
+              </Button>
+            </Link>
           </div>
         </div>
       </Section>
