@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req: any, res: any) {
     if (req.method !== 'POST') {
@@ -18,7 +18,7 @@ export default async function handler(req: any, res: any) {
     }
 
     try {
-        const genAI = new GoogleGenAI(apiKey);
+        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^1.33.0",
+    "@google/generative-ai": "^0.24.1",
     "@headlessui/react": "^2.2.9",
     "@sanity/client": "^7.13.2",
     "@sanity/image-url": "^2.0.2",
