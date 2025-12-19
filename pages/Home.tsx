@@ -11,9 +11,9 @@ export const Home: React.FC = () => {
       <div className="relative h-screen min-h-[600px] bg-black text-white overflow-hidden flex items-center">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://picsum.photos/1920/1080?grayscale&blur=2"
-            alt="Students filming"
-            className="w-full h-full object-cover opacity-50 scale-105 animate-[pulse_10s_ease-in-out_infinite]"
+            src="/assets/brand/hero-students.png"
+            alt="Students filming on location in Ocoee"
+            className="w-full h-full object-cover opacity-60 scale-110 animate-[zoom-slow_20s_ease-in-out_infinite]"
           />
         </div>
         {/* Vignette Overlay */}
@@ -98,7 +98,7 @@ export const Home: React.FC = () => {
             {/* Artistic Video Placeholder */}
             <div className="relative aspect-video bg-black border border-slate-700 p-2 group cursor-pointer overflow-hidden">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none z-10"></div>
-              <img src="https://picsum.photos/seed/film/800/450?grayscale" alt="Showcase Reel" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 filter grayscale group-hover:grayscale-0" />
+              <img src="/assets/brand/studio-editing.png" alt="Showcase Reel" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000 filter grayscale group-hover:grayscale-0" />
 
               <div className="absolute inset-0 flex items-center justify-center z-20">
                 <div className="w-24 h-24 border border-white/30 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-90 transition-transform duration-500">
@@ -120,7 +120,7 @@ export const Home: React.FC = () => {
 
       {/* Call to Action */}
       <Section bg="black" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://picsum.photos/id/45/1920/1080?grayscale')] opacity-10 bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-[url('/assets/brand/hero-students.png')] opacity-10 bg-cover bg-center"></div>
         <div className="relative z-10 text-center max-w-3xl mx-auto border-t border-b border-white/10 py-16">
           <Film size={48} className="mx-auto text-primary mb-8 animate-pulse" />
           <h2 className="text-5xl md:text-7xl font-serif italic text-white mb-8">Credits Roll.</h2>

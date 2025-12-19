@@ -301,15 +301,19 @@ export default function App() {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center space-x-3 group"
+            className="flex items-center space-x-4 group"
             aria-label="Rebuilt Village Home"
           >
-            <div className="border-2 border-white p-2 group-hover:bg-white group-hover:text-black transition-colors duration-300">
-              <Clapperboard size={24} />
+            <div className="relative h-14 w-14 group-hover:scale-110 transition-transform duration-500">
+              <img
+                src="/assets/brand/logo.png"
+                alt="Rebuilt Village Logo"
+                className="h-full w-full object-contain filter invert"
+              />
             </div>
             <div className="flex flex-col">
-              <span className="block text-2xl font-serif font-bold text-white leading-none italic">REBUILT</span>
-              <span className="block text-[10px] font-mono font-medium text-primary leading-none tracking-[0.3em] mt-1">VILLAGE</span>
+              <span className="block text-2xl font-serif font-bold text-white leading-none italic tracking-tight">REBUILT</span>
+              <span className="block text-[9px] font-mono font-bold text-primary leading-none tracking-[0.4em] mt-2 opacity-80">VILLAGE</span>
             </div>
           </Link>
 
@@ -414,7 +418,10 @@ export default function App() {
       <footer className="bg-black text-slate-500 py-16 border-t border-slate-900">
         <div className="container mx-auto px-4 grid md:grid-cols-5 gap-12">
           <div className="col-span-1 md:col-span-1">
-            <h4 className="text-white font-serif italic text-2xl mb-6">Rebuilt Village</h4>
+            <div className="flex items-center space-x-3 mb-6">
+              <img src="/assets/brand/logo.png" className="h-10 w-10 filter invert" alt="" />
+              <h4 className="text-white font-serif italic text-2xl">Rebuilt Village</h4>
+            </div>
             <p className="mb-6 text-sm font-light leading-relaxed">
               Cinema is an empathy machine. We are tuning the engine.
             </p>

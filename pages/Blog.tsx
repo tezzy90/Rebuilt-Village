@@ -62,7 +62,7 @@ export const Blog: React.FC = () => {
             {(posts.length > 0 ? posts : []).map((post) => (
               <Card
                 key={post._id}
-                image={post.mainImage ? urlFor(post.mainImage).url() : 'https://picsum.photos/seed/rebuilt/800/500'}
+                image={post.mainImage ? urlFor(post.mainImage).url() : '/assets/brand/hero-students.png'}
                 title={post.title}
                 subtitle="Story"
                 className="flex flex-col h-full"
