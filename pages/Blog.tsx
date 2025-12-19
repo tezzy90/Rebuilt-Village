@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Section } from '../components/Section';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
@@ -75,7 +76,9 @@ export const Blog: React.FC = () => {
                     Click to read the full story from the studio.
                   </p>
                 </div>
-                <Button variant="outline" size="sm" className="w-full mt-auto">Read Article</Button>
+                <Link to={`/blog/${post.slug.current}`} className="w-full mt-auto">
+                  <Button variant="outline" size="sm" className="w-full">Read Article</Button>
+                </Link>
               </Card>
             ))}
             {!loading && posts.length === 0 && (

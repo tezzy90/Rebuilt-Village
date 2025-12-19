@@ -18,6 +18,7 @@ const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Pri
 const Terms = lazy(() => import('./pages/Terms').then(m => ({ default: m.Terms })));
 const Board = lazy(() => import('./pages/Board').then(m => ({ default: m.Board })));
 const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
+const PostDetail = lazy(() => import('./pages/PostDetail').then(m => ({ default: m.PostDetail })));
 
 // Programs placeholder component
 const Programs = () => {
@@ -408,6 +409,7 @@ export default function App() {
             <Route path="/donate" element={<Donate />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/blog/:slug" element={<PostDetail />} />
             <Route path="/board" element={<Board />} />
             <Route path="/documents" element={<Documents />} />
           </Routes>
