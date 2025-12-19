@@ -42,47 +42,150 @@ const Programs = () => (
 );
 
 // Contact placeholder component  
-const Contact = () => (
-  <div className="py-20 container mx-auto px-4 max-w-3xl">
-    <h2 className="text-4xl font-serif italic mb-12 text-center text-white">Contact The Studio</h2>
-    <form className="bg-slate-900 p-10 border border-slate-800 space-y-8">
-      <div className="grid md:grid-cols-2 gap-8">
-        <div>
-          <label htmlFor="contact-name" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Name</label>
-          <input id="contact-name" type="text" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="Your Name" />
+// Contact placeholder component
+const Contact = () => {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: 'General Inquiry',
+    message: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', subject: 'General Inquiry', message: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="py-20 container mx-auto px-4 max-w-3xl">
+      <h2 className="text-4xl font-serif italic mb-12 text-center text-white">Contact The Studio</h2>
+
+      {status === 'success' ? (
+        <div className="bg-teal-900/20 border border-teal-800 p-10 text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="bg-teal-500 rounded-full p-2 text-black">
+              <Check size={32} />
+            </div>
+          </div>
+          <h3 className="text-2xl font-serif text-white">Message Received</h3>
+          <p className="text-teal-300 font-mono text-sm uppercase tracking-widest">We will review your call sheet shortly.</p>
+          <Button variant="outline" onClick={() => setStatus('idle')} className="mt-4">Send Another Message</Button>
         </div>
-        <div>
-          <label htmlFor="contact-email" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Email</label>
-          <input id="contact-email" type="email" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="email@address.com" />
-        </div>
-      </div>
-      <div>
-        <label htmlFor="contact-subject" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Subject</label>
-        <select id="contact-subject" className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif">
-          <option>General Inquiry</option>
-          <option>Program Enrollment</option>
-          <option>Volunteering</option>
-          <option>Partnership/Sponsorship</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="contact-message" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Message</label>
-        <textarea id="contact-message" rows={4} className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif" placeholder="Type your message..."></textarea>
-      </div>
-      <Button className="w-full" variant="secondary">Send Message</Button>
-    </form>
-  </div>
-);
+      ) : (
+        <form onSubmit={handleSubmit} className="bg-slate-900 p-10 border border-slate-800 space-y-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <label htmlFor="contact-name" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Name</label>
+              <input
+                id="contact-name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif"
+                placeholder="Your Name"
+              />
+            </div>
+            <div>
+              <label htmlFor="contact-email" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Email</label>
+              <input
+                id="contact-email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif"
+                placeholder="email@address.com"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="contact-subject" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Subject</label>
+            <select
+              id="contact-subject"
+              value={formData.subject}
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+              className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif"
+            >
+              <option>General Inquiry</option>
+              <option>Program Enrollment</option>
+              <option>Volunteering</option>
+              <option>Partnership/Sponsorship</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="contact-message" className="block text-xs font-mono text-primary mb-2 uppercase tracking-widest">Message</label>
+            <textarea
+              id="contact-message"
+              rows={4}
+              required
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              className="w-full px-4 py-3 bg-black border border-slate-700 text-white focus:border-primary outline-none transition-colors font-serif"
+              placeholder="Type your message..."
+            ></textarea>
+          </div>
+
+          <Button
+            className="w-full"
+            variant="secondary"
+            type="submit"
+            disabled={status === 'loading'}
+          >
+            {status === 'loading' ? 'Transmitting...' : 'Send Message'}
+          </Button>
+
+          {status === 'error' && (
+            <p className="text-red-500 text-xs font-mono text-center uppercase tracking-widest animate-pulse">
+              Transmission Failed. Please try again.
+            </p>
+          )}
+        </form>
+      )}
+    </div>
+  );
+};
 
 // Newsletter Form Component
 const NewsletterForm = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubmitted(true);
+    if (!email) return;
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, formType: 'newsletter' }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Newsletter error:', error);
     }
   };
 
@@ -99,7 +202,7 @@ const NewsletterForm = () => {
   }
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 text-left">
       <h4 className="text-white font-serif italic text-lg mb-4">The Call Sheet</h4>
       <p className="mb-4 text-xs font-mono text-slate-500 uppercase tracking-wide">Get casting calls & news.</p>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -182,8 +285,8 @@ export default function App() {
                 key={item.path}
                 to={item.path}
                 className={`text-xs font-mono uppercase tracking-widest transition-all hover:text-white ${location.pathname === item.path
-                    ? 'text-primary border-b border-primary pb-1'
-                    : 'text-slate-500'
+                  ? 'text-primary border-b border-primary pb-1'
+                  : 'text-slate-500'
                   }`}
               >
                 {item.label}
