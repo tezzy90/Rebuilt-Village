@@ -1,10 +1,11 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Menu, X, Instagram, Facebook, Mail, Check, Clapperboard } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
 import { Button } from './components/Button';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { useToggle } from './hooks/useToggle';
+import { urlFor } from './services/sanityClient';
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -19,27 +20,61 @@ const Board = lazy(() => import('./pages/Board').then(m => ({ default: m.Board }
 const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
 
 // Programs placeholder component
-const Programs = () => (
-  <div className="py-20 text-center container mx-auto text-slate-200">
-    <h2 className="text-3xl font-serif italic mb-12">Our Programs</h2>
-    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto px-4">
-      <div className="bg-slate-900 p-8 border border-slate-800 text-left group hover:border-primary transition-colors">
-        <div className="h-64 bg-black mb-6 bg-[url('https://picsum.photos/seed/prog1/600/400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700"></div>
-        <div className="font-mono text-xs text-primary mb-2">SCENE 101</div>
-        <h3 className="text-2xl font-serif italic mb-4">Weekend Film Lab</h3>
-        <p className="text-slate-400 mb-6 font-light">A recurring Saturday workshop for middle schoolers focusing on the fundamentals of visual storytelling.</p>
-        <Button variant="outline" size="sm">View Syllabus</Button>
-      </div>
-      <div className="bg-slate-900 p-8 border border-slate-800 text-left group hover:border-secondary transition-colors">
-        <div className="h-64 bg-black mb-6 bg-[url('https://picsum.photos/seed/prog2/600/400')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700"></div>
-        <div className="font-mono text-xs text-secondary mb-2">SCENE 202</div>
-        <h3 className="text-2xl font-serif italic mb-4">Summer Intensive</h3>
-        <p className="text-slate-400 mb-6 font-light">A 4-week deep dive for high school students. Produce a short film from script to screen.</p>
-        <Button variant="outline" size="sm">View Syllabus</Button>
-      </div>
+const Programs = () => {
+  const [programs, setPrograms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPrograms() {
+      try {
+        const { getPrograms } = await import('./services/sanityService');
+        const data = await getPrograms();
+        if (data && data.length > 0) {
+          setPrograms(data);
+        }
+      } catch (error) {
+        console.error('Error fetching programs:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPrograms();
+  }, []);
+
+  if (loading) return <div className="py-20 text-center text-slate-500 font-mono text-xs uppercase tracking-widest italic">Loading Productions...</div>;
+
+  return (
+    <div className="py-20 text-center container mx-auto text-slate-200">
+      <h2 className="text-4xl font-serif italic mb-12 tracking-tight">Our Programs</h2>
+
+      {programs.length > 0 ? (
+        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto px-4">
+          {programs.map((program, idx) => (
+            <div key={program._id || idx} className="bg-slate-900 p-8 border border-slate-800 text-left group hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
+              <div
+                className="h-72 bg-black mb-6 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-[1.02]"
+                style={{ backgroundImage: program.image ? `url(${urlFor(program.image).url()})` : `url(https://picsum.photos/seed/${idx}/600/400)` }}
+              ></div>
+              <div className="font-mono text-[10px] text-primary mb-3 uppercase tracking-[0.2em] font-bold">
+                {program.category || 'SCENE 101'}
+              </div>
+              <h3 className="text-3xl font-serif italic mb-4 leading-tight">{program.title}</h3>
+              <p className="text-slate-400 mb-8 font-light text-sm leading-relaxed">{program.description}</p>
+              <Button variant="outline" size="sm" className="px-8 border-slate-700 hover:border-white transition-all">
+                Project Details
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="max-w-xl mx-auto py-20 border border-dashed border-slate-800 rounded-lg">
+          <p className="text-slate-500 font-mono text-xs uppercase tracking-widest mb-4 italic">The script is still being written</p>
+          <p className="text-slate-600 text-[10px] uppercase tracking-wider">Connect Sanity CMS to feature your classes and workshops here.</p>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 // Contact placeholder component  
 // Contact placeholder component

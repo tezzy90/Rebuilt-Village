@@ -1,48 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Section } from '../components/Section';
 import { Card } from '../components/Card';
-import { BlogPost } from '../types';
 import { Button } from '../components/Button';
+import { getPosts, SanityPost } from '../services/sanityService';
+import { urlFor } from '../services/sanityClient';
 
 export const Blog: React.FC = () => {
-  const posts: BlogPost[] = [
+  const [posts, setPosts] = useState<SanityPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fallbackPosts = [
     {
-      id: '1',
+      _id: '1',
       title: 'Student Film "Echoes of Ocoee" Wins Regional Award',
-      excerpt: 'Our advanced summer cohort took home the Gold Lens award at the Florida Youth Film Festival this weekend.',
-      date: 'October 12, 2023',
+      publishedAt: '2023-10-12',
       author: 'Sarah Jenkins',
-      imageUrl: 'https://picsum.photos/seed/award/800/500',
-      category: 'News'
-    },
-    {
-      id: '2',
-      title: 'New Blackmagic Cameras Have Arrived!',
-      excerpt: 'Thanks to a generous grant from the Arts Council, we have upgraded our equipment locker with 5 new cinema cameras.',
-      date: 'September 28, 2023',
-      author: 'Marcus Thorne',
-      imageUrl: 'https://picsum.photos/seed/camera/800/500',
-      category: 'Equipment'
-    },
-    {
-      id: '3',
-      title: '5 Tips for Lighting on a Budget',
-      excerpt: 'You don’t need expensive Arri SkyPanels to make your film look professional. Here are five hacks using hardware store lights.',
-      date: 'September 15, 2023',
-      author: 'Elena Rodriguez',
-      imageUrl: 'https://picsum.photos/seed/light/800/500',
-      category: 'Education'
-    },
-    {
-      id: '4',
-      title: 'Meet Our New Editing Instructor',
-      excerpt: 'We are thrilled to welcome James Wu, a professional editor from Orlando, to our weekend workshop team.',
-      date: 'August 30, 2023',
-      author: 'Sarah Jenkins',
-      imageUrl: 'https://picsum.photos/seed/editor/800/500',
-      category: 'Community'
+      mainImage: 'https://picsum.photos/seed/award/800/500',
+      category: 'News',
+      slug: { current: 'award' }
     }
   ];
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const data = await getPosts();
+        if (data && data.length > 0) {
+          setPosts(data);
+        }
+      } catch (error) {
+        console.error('Error fetching Sanity posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <>
@@ -54,23 +55,37 @@ export const Blog: React.FC = () => {
       </Section>
 
       <Section>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <Card 
-              key={post.id}
-              image={post.imageUrl}
-              title={post.title}
-              subtitle={post.category}
-              className="flex flex-col h-full"
-            >
-              <div className="flex-grow">
-                <p className="text-xs text-slate-400 mb-3">{post.date} • By {post.author}</p>
-                <p className="text-slate-600 mb-4 line-clamp-3">{post.excerpt}</p>
+        {loading ? (
+          <div className="text-center py-20 text-slate-400">Loading call sheet...</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {(posts.length > 0 ? posts : []).map((post) => (
+              <Card
+                key={post._id}
+                image={post.mainImage ? urlFor(post.mainImage).url() : 'https://picsum.photos/seed/rebuilt/800/500'}
+                title={post.title}
+                subtitle="Story"
+                className="flex flex-col h-full"
+              >
+                <div className="flex-grow">
+                  <p className="text-xs text-slate-400 mb-3">
+                    {formatDate(post.publishedAt)} • By {post.author}
+                  </p>
+                  <p className="text-slate-600 mb-4 line-clamp-3">
+                    Click to read the full story from the studio.
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="w-full mt-auto">Read Article</Button>
+              </Card>
+            ))}
+            {!loading && posts.length === 0 && (
+              <div className="col-span-full text-center py-20 border-2 border-dashed border-slate-800 rounded-xl">
+                <p className="text-slate-500 font-mono uppercase tracking-widest mb-4 italic text-sm">No stories found in the archives</p>
+                <p className="text-slate-400 text-xs italic">Connect Sanity CMS to publish stories.</p>
               </div>
-              <Button variant="outline" size="sm" className="w-full mt-auto">Read Article</Button>
-            </Card>
-          ))}
-        </div>
+            )}
+          </div>
+        )}
       </Section>
     </>
   );
