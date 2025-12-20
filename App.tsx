@@ -20,7 +20,6 @@ const Board = lazy(() => import('./pages/Board').then(m => ({ default: m.Board }
 const Documents = lazy(() => import('./pages/Documents').then(m => ({ default: m.Documents })));
 const PostDetail = lazy(() => import('./pages/PostDetail').then(m => ({ default: m.PostDetail })));
 
-// Programs placeholder component
 const Programs = () => {
   const [programs, setPrograms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,36 +41,54 @@ const Programs = () => {
     fetchPrograms();
   }, []);
 
-  if (loading) return <div className="py-20 text-center text-slate-500 font-mono text-xs uppercase tracking-widest italic">Loading Productions...</div>;
-
   return (
     <div className="py-20 text-center container mx-auto text-slate-200">
-      <h2 className="text-4xl font-serif italic mb-12 tracking-tight">Our Programs</h2>
+      <div className="flex flex-col items-center mb-16">
+        <div className="font-mono text-[10px] text-primary mb-4 uppercase tracking-[0.4em] font-bold opacity-60">Current Season</div>
+        <h2 className="text-5xl md:text-6xl font-serif italic tracking-tight text-white">Our Programs</h2>
+        <div className="h-1 w-20 bg-primary/30 mt-6 mt-6"></div>
+      </div>
 
-      {programs.length > 0 ? (
+      {loading ? (
         <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto px-4">
-          {programs.map((program, idx) => (
-            <div key={program._id || idx} className="bg-slate-900 p-8 border border-slate-800 text-left group hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
-              <div
-                className="h-72 bg-black mb-6 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-[1.02]"
-                style={{ backgroundImage: program.image ? `url(${urlFor(program.image).url()})` : `url(https://picsum.photos/seed/${idx}/600/400)` }}
-              ></div>
-              <div className="font-mono text-[10px] text-primary mb-3 uppercase tracking-[0.2em] font-bold">
-                {program.category || 'SCENE 101'}
-              </div>
-              <h3 className="text-3xl font-serif italic mb-4 leading-tight">{program.title}</h3>
-              <p className="text-slate-400 mb-8 font-light text-sm leading-relaxed">{program.description}</p>
-              <Button variant="outline" size="sm" className="px-8 border-slate-700 hover:border-white transition-all">
-                Project Details
-              </Button>
+          {[1, 2].map((n) => (
+            <div key={n} className="bg-slate-900/50 p-8 border border-slate-800/50 animate-pulse h-[500px]">
+              <div className="h-72 bg-slate-800 mb-6"></div>
+              <div className="h-4 bg-slate-800 w-1/4 mb-4"></div>
+              <div className="h-8 bg-slate-800 w-3/4 mb-4"></div>
+              <div className="h-4 bg-slate-800 w-full mb-2"></div>
+              <div className="h-4 bg-slate-800 w-2/3"></div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="max-w-xl mx-auto py-20 border border-dashed border-slate-800 rounded-lg">
-          <p className="text-slate-500 font-mono text-xs uppercase tracking-widest mb-4 italic">The script is still being written</p>
-          <p className="text-slate-600 text-[10px] uppercase tracking-wider">Connect Sanity CMS to feature your classes and workshops here.</p>
-        </div>
+        <>
+          {programs.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto px-4">
+              {programs.map((program, idx) => (
+                <div key={program._id || idx} className="bg-slate-900 p-8 border border-slate-800 text-left group hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
+                  <div
+                    className="h-72 bg-black mb-6 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-[1.02]"
+                    style={{ backgroundImage: program.image ? `url(${urlFor(program.image).url()})` : `url(https://picsum.photos/seed/${idx}/600/400)` }}
+                  ></div>
+                  <div className="font-mono text-[10px] text-primary mb-3 uppercase tracking-[0.2em] font-bold">
+                    {program.category || 'SCENE 101'}
+                  </div>
+                  <h3 className="text-3xl font-serif italic mb-4 leading-tight">{program.title}</h3>
+                  <p className="text-slate-400 mb-8 font-light text-sm leading-relaxed">{program.description}</p>
+                  <Button variant="outline" size="sm" className="px-8 border-slate-700 hover:border-white transition-all">
+                    Project Details
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="max-w-xl mx-auto py-20 border border-dashed border-slate-800 rounded-lg">
+              <p className="text-slate-500 font-mono text-xs uppercase tracking-widest mb-4 italic">The script is still being written</p>
+              <p className="text-slate-600 text-[10px] uppercase tracking-wider">Connect Sanity CMS to feature your classes and workshops here.</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -307,9 +324,9 @@ export default function App() {
           >
             <div className="relative h-14 w-14 group-hover:scale-110 transition-transform duration-500">
               <img
-                src="/assets/brand/logo.png"
+                src="/assets/brand/logo.svg"
                 alt="Rebuilt Village Logo"
-                className="h-full w-full object-contain filter invert"
+                className="h-full w-full object-contain text-primary"
               />
             </div>
             <div className="flex flex-col">
@@ -421,7 +438,7 @@ export default function App() {
         <div className="container mx-auto px-4 grid md:grid-cols-5 gap-12">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center space-x-3 mb-6">
-              <img src="/assets/brand/logo.png" className="h-10 w-10 filter invert" alt="" />
+              <img src="/assets/brand/logo.svg" className="h-10 w-10 text-primary" alt="" />
               <h4 className="text-white font-serif italic text-2xl">Rebuilt Village</h4>
             </div>
             <p className="mb-6 text-sm font-light leading-relaxed">

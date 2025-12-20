@@ -29,7 +29,7 @@ export const Home: React.FC = () => {
               Life, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">Framed.</span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-300 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
-              We don't just teach film. We rebuild perspectives. Empowering the next generation of visual storytellers.
+              Enriching the community through the art of film. We empower local voices to capture personal stories and preserve them for future generations.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Link to="/programs">
@@ -39,7 +39,7 @@ export const Home: React.FC = () => {
               </Link>
               <Link to="/about">
                 <Button variant="outline" size="lg">
-                  Manifesto
+                  Our Vision
                 </Button>
               </Link>
             </div>
@@ -73,9 +73,9 @@ export const Home: React.FC = () => {
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-5 relative">
             <div className="absolute -top-10 -left-10 w-32 h-32 border-t-2 border-l-2 border-primary/30 hidden md:block"></div>
-            <h2 className="text-4xl md:text-6xl font-serif mb-8 text-white">The Art of<br /><span className="italic text-slate-500">Seeing.</span></h2>
+            <h2 className="text-4xl md:text-6xl font-serif mb-8 text-white">The Art of<br /><span className="italic text-slate-500">Connecting.</span></h2>
             <p className="text-lg text-slate-400 mb-8 leading-relaxed font-light">
-              Rebuilt Village isn't about rote learning. It's about finding the narrative in the noise. We provide professional-grade cinema cameras, lighting, and post-production suites to students who have the vision but need the tools.
+              We believe film is the ultimate medium for community restoration. By providing the tools to tell personal narratives, we bridge the gap between neighbors and preserve the living history of Ocoee.
             </p>
             <ul className="space-y-6 mb-12">
               {[
