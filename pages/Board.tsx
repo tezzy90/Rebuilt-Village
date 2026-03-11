@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Section } from '../components/Section';
-import { Users, Linkedin, Mail } from 'lucide-react';
+import { Linkedin, Mail } from 'lucide-react';
 import { Button } from '../components/Button';
+import { getBoardMembers, SanityBoardMember } from '../services/sanityService';
+import { urlFor } from '../services/sanityClient';
 
+// ─── Local display interface ──────────────────────────────────────────────────
 interface BoardMember {
     name: string;
     title: string;
@@ -12,62 +15,92 @@ interface BoardMember {
     email?: string;
 }
 
+// ─── Fallback: real board members from verified Drive docs ────────────────────
+// Replace with Sanity entries via studio.rebuiltvillage.org when headshots ready.
+const FALLBACK_BOARD: BoardMember[] = [
+    {
+        name: 'Steve Kohn',
+        title: 'President',
+        bio: 'Steve co-founded Rebuilt Village with Tony and oversees organizational strategy, board governance, and long-term vision for film education in Central Florida.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+    {
+        name: 'Amanda Baez',
+        title: 'Vice President',
+        bio: 'Amanda drives grant strategy and program development, ensuring Rebuilt Village\'s work is funded and that every initiative produces measurable impact for youth.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+    {
+        name: 'Kenya Fulton',
+        title: 'Treasurer',
+        bio: 'Kenya manages Rebuilt Village\'s financial stewardship and ensures every donor dollar is invested with transparency and accountability.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+    {
+        name: 'Jess Ayala',
+        title: 'Secretary',
+        bio: 'Jess keeps the organization organized and accountable — managing meeting records, board documentation, and organizational communications.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+    {
+        name: 'Aaron Tanyhill',
+        title: 'Board Member',
+        bio: 'Aaron brings creative vision and community voice to Rebuilt Village\'s mission, helping shape programs and messaging that resonate with the people they serve.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+    {
+        name: 'Karen Rugerio',
+        title: 'Board Member',
+        bio: 'Karen brings expertise in youth internship development and career pathways, guiding how students transition from Rebuilt Village programs into working in the arts.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+    {
+        name: 'Tony Golden',
+        title: 'Executive Director',
+        bio: 'Tony leads Rebuilt Village\'s day-to-day operations and programming, bringing deep film production experience to build real pathways for the next generation of Orlando storytellers.',
+        imageUrl: '/assets/brand/placeholder-team.png',
+    },
+];
+
+function mapSanityBoardMember(m: SanityBoardMember): BoardMember {
+    return {
+        name: m.name,
+        title: m.role,
+        bio: m.bio,
+        imageUrl: m.headshot
+            ? urlFor(m.headshot).width(400).auto('format').url()
+            : '/assets/brand/placeholder-team.png',
+        linkedin: m.linkedIn,
+        email: m.email,
+    };
+}
+
+// ─── Board page ───────────────────────────────────────────────────────────────
 export const Board: React.FC = () => {
-    const boardMembers: BoardMember[] = [
-        {
-            name: "Jane Anderson",
-            title: "Board Chair",
-            bio: "Jane is a film producer with 15+ years of experience in documentary filmmaking. She is passionate about arts education and serves on multiple nonprofit boards in Central Florida.",
-            imageUrl: "https://ui-avatars.com/api/?name=Jane+Anderson&size=400&background=020617&color=0d9488&bold=true",
-            linkedin: "#",
-            email: "jane.anderson@rebuiltvillage.org"
-        },
-        {
-            name: "Michael Chen",
-            title: "Vice Chair",
-            bio: "Michael is a technology executive and entrepreneur who believes in the power of storytelling. He brings expertise in digital media and operations to the board.",
-            imageUrl: "https://ui-avatars.com/api/?name=Michael+Chen&size=400&background=020617&color=f97316&bold=true",
-            linkedin: "#"
-        },
-        {
-            name: "Sarah Williams",
-            title: "Treasurer",
-            bio: "Sarah is a CPA with a specialty in nonprofit accounting. She ensures financial transparency and sustainability for Rebuilt Village's mission.",
-            imageUrl: "https://ui-avatars.com/api/?name=Sarah+Williams&size=400&background=020617&color=0d9488&bold=true",
-            linkedin: "#",
-            email: "sarah.williams@rebuiltvillage.org"
-        },
-        {
-            name: "David Rodriguez",
-            title: "Secretary",
-            bio: "David is an attorney specializing in education law. He advocates for equitable access to arts education in underserved communities.",
-            imageUrl: "https://ui-avatars.com/api/?name=David+Rodriguez&size=400&background=020617&color=f97316&bold=true",
-            linkedin: "#"
-        },
-        {
-            name: "Emily Thompson",
-            title: "Education Specialist",
-            bio: "Emily is a high school film teacher in Orange County. She brings classroom experience and deep understanding of student needs to the board.",
-            imageUrl: "https://ui-avatars.com/api/?name=Emily+Thompson&size=400&background=020617&color=0d9488&bold=true",
-            email: "emily.thompson@rebuiltvillage.org"
-        },
-        {
-            name: "Marcus Johnson",
-            title: "Creative Advisor",
-            bio: "Marcus is a cinematographer and community organizer. He is committed to empowering youth voices through visual media.",
-            imageUrl: "https://ui-avatars.com/api/?name=Marcus+Johnson&size=400&background=020617&color=f97316&bold=true",
-            linkedin: "#"
-        }
-    ];
+    const [boardMembers, setBoardMembers] = useState<BoardMember[]>(FALLBACK_BOARD);
+
+    useEffect(() => {
+        getBoardMembers()
+            .then((members) => {
+                if (members.length > 0) {
+                    setBoardMembers(members.map(mapSanityBoardMember));
+                }
+            })
+            .catch(() => { /* keep fallback */ });
+    }, []);
 
     return (
         <>
             <Section bg="black" className="pt-32">
                 <div className="text-center">
-                    <div className="font-mono text-[10px] text-primary mb-4 uppercase tracking-[0.4em] font-bold opacity-60">Executive Committee</div>
-                    <h1 className="text-5xl md:text-7xl font-serif italic tracking-tight text-white mb-8">Board of Directors</h1>
-                    <div className="h-1 w-24 bg-primary/30 mx-auto mb-10"></div>
-                    <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
+                    <div className="font-mono text-[10px] text-primary mb-4 uppercase tracking-[0.4em] font-bold opacity-60">
+                        Executive Committee
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-serif italic tracking-tight text-text mb-8">
+                        Board of Directors
+                    </h1>
+                    <div className="h-1 w-24 bg-primary/30 mx-auto mb-10" />
+                    <p className="text-xl text-text-muted max-w-2xl mx-auto leading-relaxed font-light">
                         Meet the dedicated leaders guiding Rebuilt Village's mission to empower youth through professional-grade film education.
                     </p>
                 </div>
@@ -76,19 +109,19 @@ export const Board: React.FC = () => {
             <Section bg="black">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        {boardMembers.map((member, index) => (
+                        {boardMembers.map((member) => (
                             <div
-                                key={index}
-                                className="bg-slate-900/40 border border-slate-800 p-8 group hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
+                                key={member.name}
+                                className="bg-slate-900/40 border border-border p-8 group hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
                             >
-                                {/* Image / Avatar */}
-                                <div className="aspect-square bg-black border border-slate-800 mb-8 overflow-hidden relative">
+                                {/* Headshot */}
+                                <div className="aspect-square bg-black border border-border mb-8 overflow-hidden relative">
                                     <img
                                         src={member.imageUrl}
-                                        alt={member.name}
+                                        alt={`${member.name}, ${member.title}`}
                                         className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-110"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" aria-hidden="true" />
                                 </div>
 
                                 {/* Info */}
@@ -96,52 +129,56 @@ export const Board: React.FC = () => {
                                     <div className="font-mono text-[9px] text-primary mb-3 uppercase tracking-[0.2em] font-bold">
                                         {member.title}
                                     </div>
-                                    <h3 className="text-3xl font-serif italic text-white mb-4 leading-tight group-hover:text-primary transition-colors">
+                                    <h3 className="text-3xl font-serif italic text-text mb-4 leading-tight group-hover:text-primary transition-colors">
                                         {member.name}
                                     </h3>
-                                    <p className="text-slate-400 text-sm leading-relaxed mb-8 font-light">
+                                    <p className="text-text-muted text-sm leading-relaxed mb-8 font-light">
                                         {member.bio}
                                     </p>
 
-                                    {/* Contact */}
-                                    <div className="flex space-x-6 pt-6 border-t border-slate-800">
-                                        {member.linkedin && (
-                                            <a
-                                                href={member.linkedin}
-                                                className="text-slate-500 hover:text-white transition-colors"
-                                                aria-label={`${member.name} LinkedIn`}
-                                            >
-                                                <Linkedin size={18} />
-                                            </a>
-                                        )}
-                                        {member.email && (
-                                            <a
-                                                href={`mailto:${member.email}`}
-                                                className="text-slate-500 hover:text-white transition-colors"
-                                                aria-label={`Email ${member.name}`}
-                                            >
-                                                <Mail size={18} />
-                                            </a>
-                                        )}
-                                    </div>
+                                    {/* Links */}
+                                    {(member.linkedin || member.email) && (
+                                        <div className="flex space-x-6 pt-6 border-t border-border">
+                                            {member.linkedin && (
+                                                <a
+                                                    href={member.linkedin}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-text-muted/50 hover:text-text transition-colors"
+                                                    aria-label={`${member.name} on LinkedIn`}
+                                                >
+                                                    <Linkedin size={18} />
+                                                </a>
+                                            )}
+                                            {member.email && (
+                                                <a
+                                                    href={`mailto:${member.email}`}
+                                                    className="text-text-muted/50 hover:text-text transition-colors"
+                                                    aria-label={`Email ${member.name}`}
+                                                >
+                                                    <Mail size={18} />
+                                                </a>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
                     </div>
 
                     {/* Join the Board CTA */}
-                    <div className="mt-24 text-center border-t border-slate-900 pt-20">
-                        <div className="max-w-xl mx-auto p-12 bg-slate-900/20 border border-dashed border-slate-800">
-                            <h3 className="text-3xl font-serif italic text-white mb-6">
+                    <div className="mt-24 text-center border-t border-border pt-20">
+                        <div className="max-w-xl mx-auto p-12 bg-surface/20 border border-dashed border-border">
+                            <h3 className="text-3xl font-serif italic text-text mb-6">
                                 Executive Producer Call
                             </h3>
-                            <p className="text-slate-400 max-w-md mx-auto mb-10 leading-relaxed font-light">
+                            <p className="text-text-muted max-w-md mx-auto mb-10 leading-relaxed font-light">
                                 We're always looking for passionate individuals who can contribute their expertise to advance our mission. Interested in a leadership role?
                             </p>
                             <Button
                                 variant="outline"
                                 size="lg"
-                                onClick={() => window.location.href = 'mailto:info@rebuiltvillage.org?subject=Board of Directors Inquiry'}
+                                onClick={() => window.location.href = 'mailto:hello@rebuiltvillage.org?subject=Board of Directors Inquiry'}
                             >
                                 Apply to Board
                             </Button>

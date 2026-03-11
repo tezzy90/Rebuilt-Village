@@ -7,16 +7,16 @@ interface SectionProps {
   bg?: 'black' | 'dark' | 'paper';
 }
 
-export const Section: React.FC<SectionProps> = ({ 
-  className = '', 
-  children, 
+export const Section: React.FC<SectionProps> = ({
+  className = '',
+  children,
   id,
   bg = 'black'
 }) => {
   const bgColors = {
-    black: 'bg-film-black text-slate-200',
-    dark: 'bg-slate-900 text-slate-200',
-    paper: 'bg-slate-800 text-slate-200 border-t border-b border-slate-700', // Changed from white to dark slate for dark mode
+    black: 'bg-background text-text',
+    dark: 'bg-surface text-text',
+    paper: 'bg-surface-highlight text-text border-t border-b border-border',
   };
 
   return (

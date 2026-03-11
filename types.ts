@@ -4,7 +4,6 @@ export enum View {
   PROGRAMS = 'PROGRAMS',
   GALLERY = 'GALLERY',
   DONATE = 'DONATE',
-  STORY_SPARK = 'STORY_SPARK', // AI Feature
   CONTACT = 'CONTACT',
   BLOG = 'BLOG',
   EVENTS = 'EVENTS',
@@ -12,6 +11,7 @@ export enum View {
   TERMS = 'TERMS',
   BOARD = 'BOARD',
   DOCUMENTS = 'DOCUMENTS',
+  FAQ = 'FAQ',
 }
 
 export interface StudentFilm {
@@ -53,11 +53,18 @@ export interface BlogPost {
 export interface Event {
   id: string;
   title: string;
-  date: string; // ISO string or formatted date
+  date: string;        // ISO date for sorting/comparison (YYYY-MM-DD)
+  dateEnd?: string;    // ISO end date for multi-day events
   day: string;
   month: string;
+  year?: string;
   time: string;
   location: string;
   description: string;
-  type: 'workshop' | 'screening' | 'community';
+  type: 'workshop' | 'screening' | 'community' | 'festival' | 'fundraiser';
+  registrationUrl?: string;
+  featured?: boolean;
+  sponsoredBy?: string;
+  accentColor?: string; // hex override — bypasses CSS variable bug
+  tags?: string[];
 }

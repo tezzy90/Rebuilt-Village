@@ -48,7 +48,7 @@ export const Blog: React.FC = () => {
 
   return (
     <>
-      <Section bg="light" className="text-center">
+      <Section bg="dark" className="text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">The Clapperboard</h1>
         <p className="text-xl text-slate-600 max-w-2xl mx-auto">
           News, student spotlights, and filmmaking tips from the Rebuilt Village community.

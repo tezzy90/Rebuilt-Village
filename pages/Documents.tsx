@@ -75,7 +75,7 @@ export const Documents: React.FC = () => {
     const getTypeColor = (type: Document['type']) => {
         switch (type) {
             case 'tax': return 'text-primary border-primary/30';
-            case 'financial': return 'text-secondary border-secondary/30';
+            case 'financial': return 'text-[#2DBFA0] border-[#2DBFA040]';
             case 'annual': return 'text-white border-white/30';
             case 'governance': return 'text-slate-400 border-slate-700';
             default: return 'text-slate-500 border-slate-800';

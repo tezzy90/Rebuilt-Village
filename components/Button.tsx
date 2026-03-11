@@ -1,36 +1,74 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'gold';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
-  variant = 'primary', 
-  size = 'md', 
-  className = '', 
-  children, 
-  ...props 
+export const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
+  className = '',
+  children,
+  ...props
 }) => {
-  // Changes: Removed rounded-md, added tracking-widest, uppercase, font-bold
-  const baseStyles = "inline-flex items-center justify-center font-bold uppercase tracking-widest transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none transform hover:-translate-y-1";
-  
+  const baseStyles = [
+    'inline-flex items-center justify-center',
+    'font-mono font-bold uppercase tracking-widest',
+    'transition-all duration-300',
+    'focus:outline-none focus:ring-2 focus:ring-primary/60 focus:ring-offset-2 focus:ring-offset-background',
+    'disabled:opacity-40 disabled:pointer-events-none',
+    'transform hover:-translate-y-0.5',
+  ].join(' ');
+
   const variants = {
-    primary: "bg-primary text-white hover:bg-teal-500 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]",
-    secondary: "bg-secondary text-white hover:bg-orange-600 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]",
-    outline: "border-2 border-slate-500 bg-transparent hover:border-white hover:text-white text-slate-300",
-    ghost: "bg-transparent hover:bg-white/10 text-slate-300 hover:text-white",
+    // Brand gold fill — primary CTA (black text on gold, 9.2:1 contrast)
+    primary: [
+      'bg-primary text-primary-foreground',
+      'hover:bg-brand-gold-light hover:shadow-gold',
+      'active:translate-y-0',
+    ].join(' '),
+
+    // Gold fill with shimmer — high-impact donate / featured CTAs
+    gold: [
+      'bg-gradient-to-r from-brand-gold-dark via-brand-gold to-brand-gold-light',
+      'text-brand-black',
+      'hover:from-brand-gold hover:via-brand-gold-light hover:to-brand-gold',
+      'hover:shadow-gold-lg glow-gold',
+      'active:translate-y-0',
+    ].join(' '),
+
+    // Secondary fill — less prominent actions
+    secondary: [
+      'bg-surface text-text border border-border',
+      'hover:bg-surface-highlight hover:border-primary',
+      'active:translate-y-0',
+    ].join(' '),
+
+    // Outline — ghost with border, used on dark backgrounds
+    outline: [
+      'border border-primary/40 bg-transparent',
+      'text-primary',
+      'hover:border-primary hover:bg-primary/8 hover:shadow-gold',
+      'active:translate-y-0',
+    ].join(' '),
+
+    // Ghost — minimal, for tertiary actions
+    ghost: [
+      'bg-transparent text-text-muted',
+      'hover:bg-surface-highlight hover:text-text',
+    ].join(' '),
   };
 
   const sizes = {
-    sm: "h-8 px-4 text-xs",
-    md: "h-12 px-6 text-sm",
-    lg: "h-14 px-10 text-base",
+    sm: 'h-8 px-5 text-[10px]',
+    md: 'h-11 px-7 text-xs',
+    lg: 'h-14 px-10 text-sm',
   };
 
   return (
-    <button 
+    <button
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >

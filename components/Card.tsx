@@ -12,11 +12,11 @@ export const Card: React.FC<CardProps> = ({ image, title, subtitle, children, cl
   return (
     <div className={`group relative bg-transparent ${className}`}>
       {image && (
-        <div className="aspect-[4/3] overflow-hidden mb-4 border-2 border-transparent group-hover:border-white/20 transition-all duration-500">
-          <img 
-            src={image} 
-            alt={title} 
-            className="w-full h-full object-cover filter grayscale contrast-125 transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105" 
+        <div className="aspect-[4/3] overflow-hidden mb-4 border-2 border-transparent group-hover:border-text/20 transition-all duration-500">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover filter grayscale contrast-125 transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105"
           />
         </div>
       )}
@@ -26,8 +26,8 @@ export const Card: React.FC<CardProps> = ({ image, title, subtitle, children, cl
             {subtitle}
           </p>
         )}
-        <h3 className="text-2xl font-serif italic text-white mb-3 group-hover:text-primary transition-colors">{title}</h3>
-        <div className="text-slate-400 font-light leading-relaxed">
+        <h3 className="text-2xl font-serif italic text-text mb-3 group-hover:text-primary transition-colors">{title}</h3>
+        <div className="text-text-muted font-light leading-relaxed">
           {children}
         </div>
       </div>

@@ -1,21 +1,59 @@
 {
-    "name": "Rebuilt Village",
-    "short_name": "Rebuilt Village",
-    "description": "Film education nonprofit empowering Ocoee's youth",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#020617",
-    "theme_color": "#0d9488",
-    "icons": [
-        {
-            "src": "/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+  "name": "Rebuilt Village",
+  "short_name": "Rebuilt Village",
+  "description": "Film education nonprofit empowering Ocoee's youth through professional cinema training.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "categories": ["education", "nonprofit", "art"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/assets/brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Donate",
+      "short_name": "Donate",
+      "description": "Support film education in Ocoee",
+      "url": "/donate",
+      "icons": [{ "src": "/assets/brand/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Our Programs",
+      "short_name": "Programs",
+      "description": "Film education programs for Ocoee youth",
+      "url": "/programs",
+      "icons": [{ "src": "/assets/brand/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/brand/screenshot-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Rebuilt Village homepage"
+    }
+  ]
 }

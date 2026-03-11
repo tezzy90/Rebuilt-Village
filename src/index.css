@@ -1,87 +1,217 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
-/* Custom Global Styles */
+/* ═══════════════════════════════════════════════════════════════════════════
+   REBUILT VILLAGE — Design System
+   Brand identity extracted from logo:
+     · Wordmark gold (#C9A84C) is the primary accent color
+     · Six art-form accent colors mirror the six tree branch colors
+     · Dark foundation (#0A0A0A) matches the logo's native background
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @layer base {
-  body {
-    @apply font-sans bg-film-black text-slate-200;
+
+  /* ── Light mode ─────────────────────────────────────────────────────────── */
+  :root {
+    --background:        249 246 240;   /* warm cream — editorial, not clinical */
+    --surface:           255 252 245;   /* slightly warmer white */
+    --surface-highlight: 243 238 228;   /* warm gray for cards */
+    --text:               26  22  14;   /* near-black with warmth */
+    --text-muted:         90  84  72;   /* warm medium gray */
+
+    /* Primary: Brand Gold ─ #C9A84C ─ WCAG AAA on --background */
+    --primary:           201 168  76;
+    --primary-foreground:  10  10  10;  /* black text on gold — 9.2:1 contrast */
+    --border:            218 210 194;
+
+    /* ── Art-form accent palette (tree branch colors) ── */
+    --accent-teal:        45 191 160;   /* community growth        */
+    --accent-green:       74 158  82;   /* film / education        */
+    --accent-crimson:    192  57  43;   /* theater / drama         */
+    --accent-purple:     123  47 190;   /* creative expression     */
+    --accent-blue:        27  79 190;   /* visual arts / trust     */
+    --accent-amber:      224 123   0;   /* energy / workshops      */
+    --accent-pink:       220  38 127;   /* music / performance     */
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-serif;
+  /* ── Dark mode (native logo background) ─────────────────────────────────── */
+  .dark {
+    --background:          10  10  10;  /* logo black — #0A0A0A    */
+    --surface:             22  22  22;  /* #161616                 */
+    --surface-highlight:   32  30  26;  /* very dark warm gray     */
+    --text:               255 252 240;  /* warm white              */
+    --text-muted:         170 162 140;  /* warm medium gray        */
+
+    --primary:           201 168  76;   /* gold unchanged          */
+    --primary-foreground:  10  10  10;
+    --border:              48  44  36;  /* dark warm border        */
+  }
+
+  /* ── Base typography ────────────────────────────────────────────────────── */
+  body {
+    @apply font-sans bg-background text-text transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Display headings use Cinzel — matches the logo wordmark */
+  h1 { @apply font-display tracking-wide; }
+  h2 { @apply font-display tracking-wide; }
+
+  /* Subheadings use Cormorant Garamond — elegant editorial serif */
+  h3, h4, h5, h6 { @apply font-serif; }
+
+  /* Smooth focus rings using brand gold */
+  :focus-visible {
+    outline: 2px solid rgb(var(--primary));
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 }
 
-/* Film Grain Overlay */
+/* ═══════════════════════════════════════════════════════════════════════════
+   BRAND COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Film grain overlay (subtle cinematic texture) ──────────────────────── */
 .film-grain {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.05;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   transition: opacity 0.3s ease;
 }
+.film-grain.disabled { opacity: 0; }
 
-.film-grain.disabled {
-  opacity: 0;
+/* ── Gold shimmer text effect ──────────────────────────────────────────── */
+.text-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    #A07830 0%,
+    #E0C06E 30%,
+    #C9A84C 50%,
+    #E0C06E 70%,
+    #A07830 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-slate-900;
+/* ── Gold glow utility ─────────────────────────────────────────────────── */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.25),
+              0 0 60px rgba(201, 168, 76, 0.08);
+}
+.glow-gold-lg {
+  box-shadow: 0 0 40px rgba(201, 168, 76, 0.35),
+              0 0 80px rgba(201, 168, 76, 0.12);
 }
 
+/* ── Marquee ticker ────────────────────────────────────────────────────── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+/* ── Gold rule divider ─────────────────────────────────────────────────── */
+.brand-rule {
+  width: 3rem;
+  height: 2px;
+  background: linear-gradient(90deg, #C9A84C, #E0C06E, #C9A84C);
+}
+.brand-rule-lg {
+  width: 6rem;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #C9A84C, #E0C06E, #C9A84C, transparent);
+}
+
+/* ── Art-form color classes (tree branch palette) ─────────────────────── */
+.accent-teal    { color: rgb(var(--accent-teal));    }
+.accent-green   { color: rgb(var(--accent-green));   }
+.accent-crimson { color: rgb(var(--accent-crimson)); }
+.accent-purple  { color: rgb(var(--accent-purple));  }
+.accent-blue    { color: rgb(var(--accent-blue));    }
+.accent-amber   { color: rgb(var(--accent-amber));   }
+.accent-pink    { color: rgb(var(--accent-pink));    }
+
+.bg-accent-teal    { background-color: rgb(var(--accent-teal));    }
+.bg-accent-green   { background-color: rgb(var(--accent-green));   }
+.bg-accent-crimson { background-color: rgb(var(--accent-crimson)); }
+.bg-accent-purple  { background-color: rgb(var(--accent-purple));  }
+.bg-accent-blue    { background-color: rgb(var(--accent-blue));    }
+.bg-accent-amber   { background-color: rgb(var(--accent-amber));   }
+.bg-accent-pink    { background-color: rgb(var(--accent-pink));    }
+
+/* ── Cinematic letterbox bars ─────────────────────────────────────────── */
+.letterbox::before,
+.letterbox::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 4rem;
+  background: #0A0A0A;
+  z-index: 10;
+  pointer-events: none;
+}
+.letterbox::before { top: 0; }
+.letterbox::after  { bottom: 0; }
+
+/* ── Custom scrollbar (gold on dark) ─────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-700;
+  background: rgba(201, 168, 76, 0.35);
+  border-radius: 3px;
 }
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 168, 76, 0.6); }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-600;
-}
-
-/* Selection styling */
+/* ── Selection color ─────────────────────────────────────────────────── */
 ::selection {
-  @apply bg-primary text-white;
+  background: rgba(201, 168, 76, 0.3);
+  color: inherit;
 }
 
-/* Mobile menu slide-in animation */
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
+/* ── Mobile menu animation ────────────────────────────────────────────── */
+@keyframes slideIn  { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+.mobile-menu-enter { animation: slideIn  0.3s ease-out forwards; }
+.mobile-menu-exit  { animation: slideOut 0.3s ease-out forwards; }
 
-  to {
-    transform: translateX(0);
-  }
+/* ── Glowing pulse animation ─────────────────────────────────────────── */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(201,168,76,0.15); }
+  50%       { box-shadow: 0 0 28px 6px rgba(201,168,76,0.35); }
+}
+.animate-glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+
+/* ── Impact ticker (gold bar at top) ─────────────────────────────────── */
+.impact-ticker {
+  background: linear-gradient(90deg, #A07830 0%, #C9A84C 30%, #E0C06E 60%, #C9A84C 80%, #A07830 100%);
+  background-size: 200% auto;
+  animation: shimmer 8s linear infinite;
 }
 
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
+/* ── Reduced motion override ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .text-gold-shimmer,
+  .animate-glow-pulse,
+  .impact-ticker {
+    animation: none !important;
   }
-
-  to {
-    transform: translateX(100%);
-  }
-}
-
-.mobile-menu-enter {
-  animation: slideIn 0.3s ease-out forwards;
-}
-
-.mobile-menu-exit {
-  animation: slideOut 0.3s ease-out forwards;
+  .film-grain { opacity: 0; }
 }

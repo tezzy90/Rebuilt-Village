@@ -1,146 +1,357 @@
-import React from 'react';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/Button';
-import { Section } from '../components/Section';
-import { Play, Film } from 'lucide-react';
+import { announceToScreenReader } from '../src/utils/a11y';
+import { ImpactDashboard } from '../components/ImpactDashboard';
+import { VideoPlayer } from '../components/VideoPlayer';
 
-export const Home: React.FC = () => {
+// ─── Animated counter ───────────────────────────────────────────────────────
+interface CounterProps {
+  target: number;
+  suffix?: string;
+  duration?: number;
+}
+
+const AnimatedCounter: React.FC<CounterProps> = ({ target, suffix = '', duration = 2000 }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-50px' });
+  const prefersReduced = useReducedMotion();
+
+  useEffect(() => {
+    if (!inView) return;
+    if (prefersReduced) { setCount(target); return; }
+
+    const steps = 60;
+    const increment = target / steps;
+    const interval = duration / steps;
+    let current = 0;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        setCount(target);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(current));
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [inView, target, duration, prefersReduced]);
+
   return (
-    <>
-      {/* Cinematic Hero Section */}
-      <div className="relative h-screen min-h-[600px] bg-black text-white overflow-hidden flex items-center">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/assets/brand/hero-students.png"
-            alt="Students filming on location in Ocoee"
-            className="w-full h-full object-cover opacity-60 scale-110 animate-[zoom-slow_20s_ease-in-out_infinite]"
+    <span ref={ref} aria-label={`${target}${suffix}`}>
+      {count}{suffix}
+    </span>
+  );
+};
+
+// ─── Testimonials data ──────────────────────────────────────────────────────
+const TESTIMONIALS = [
+  {
+    quote: 'Rebuilt Village gave me a camera and, more importantly, a reason to use it. I went from never touching film equipment to directing my first short in eight weeks.',
+    name: 'Marcus T.',
+    role: 'Student, Ocoee HS — Class of 2024',
+  },
+  {
+    quote: 'As a parent, I was blown away by how seriously the mentors took the kids. This isn\'t daycare — it\'s a real professional environment.',
+    name: 'Diane R.',
+    role: 'Parent of program participant',
+  },
+  {
+    quote: 'The stories coming out of Rebuilt Village are exactly what our community needs. They\'re honest, local, and permanent.',
+    name: 'Pastor James O.',
+    role: 'Community partner, West Orange',
+  },
+];
+
+// ─── Home ───────────────────────────────────────────────────────────────────
+export const Home: React.FC = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  useEffect(() => {
+    announceToScreenReader('Welcome to Rebuilt Village. Film education nonprofit based in Ocoee, Florida.');
+  }, []);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTestimonial((i) => (i + 1) % TESTIMONIALS.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <article aria-label="Rebuilt Village homepage">
+
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <section
+        aria-labelledby="hero-heading"
+        className="relative h-screen flex items-center justify-center overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-black">
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-30"
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=1920')" }}
+            aria-hidden="true"
           />
+          {/* Cinematic letterbox */}
+          <div className="absolute top-0 left-0 right-0 h-16 bg-black z-10" aria-hidden="true" />
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-black z-10" aria-hidden="true" />
         </div>
-        {/* Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-film-black via-transparent to-film-black/80 z-10"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-black/40 to-black/90 z-10"></div>
 
-        <div className="container mx-auto px-4 relative z-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-block border-y border-white/20 py-2 px-6 mb-8 backdrop-blur-sm">
-              <span className="font-mono text-sm tracking-[0.3em] text-slate-300">EST. 2023 • OCOEE, FL</span>
-            </div>
-            <h1 className="text-6xl md:text-8xl font-serif font-bold mb-8 leading-tight italic">
-              Life, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">Framed.</span>
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+          <motion.div
+            initial={prefersReducedMotion ? {} : { y: 60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <p className="text-primary font-mono tracking-[0.4em] text-[10px] mb-6 font-bold uppercase">
+              Est. 2025 &nbsp;·&nbsp; Ocoee, FL &nbsp;·&nbsp; 501(c)(3)
+            </p>
+            <h1
+              id="hero-heading"
+              className="text-6xl md:text-8xl lg:text-[10rem] font-bold text-white mb-8 font-display tracking-tighter leading-none"
+            >
+              Life, <em className="text-primary not-italic">Framed.</em>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-300 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
-              Enriching the community through the art of film. We empower local voices to capture personal stories and preserve them for future generations.
+            <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto font-serif mb-10 leading-relaxed">
+              Enriching the community through the art of film. We empower local voices to capture
+              personal stories and preserve them for future generations.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Link to="/programs">
-                <Button variant="primary" size="lg">
-                  Start Creating
+
+            <div className="flex flex-col sm:flex-row justify-center gap-4" role="group" aria-label="Primary actions">
+              <Link to="/donate">
+                <Button size="lg" className="w-full sm:w-auto focus:ring-4 focus:ring-primary/50" aria-label="Donate to support film education programs">
+                  Fund the Arts
                 </Button>
               </Link>
-              <Link to="/about">
-                <Button variant="outline" size="lg">
-                  Our Vision
+              <Link to="/programs">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto focus:ring-4 focus:ring-primary/50 border-white/30 text-white hover:border-white"
+                  aria-label="Explore our film education programs"
+                >
+                  Our Programs
                 </Button>
               </Link>
             </div>
+          </motion.div>
+        </div>
+
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-primary animate-bounce z-20" aria-hidden="true">
+          <div className="w-6 h-10 border-2 border-primary rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-primary rounded-full mt-2" />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Impact "Script" Section */}
-      <Section bg="black" className="border-b border-slate-800">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-800 border border-slate-800">
-          <div className="p-12 text-center group hover:bg-slate-900 transition-colors duration-500">
-            <div className="font-mono text-xs text-slate-500 mb-4 tracking-widest">SCENE 01: IMPACT</div>
-            <h3 className="text-5xl font-serif italic text-white mb-2 group-hover:text-primary transition-colors">150+</h3>
-            <p className="font-mono text-sm text-slate-400 uppercase tracking-widest">Students Cast</p>
-          </div>
-          <div className="p-12 text-center group hover:bg-slate-900 transition-colors duration-500">
-            <div className="font-mono text-xs text-slate-500 mb-4 tracking-widest">SCENE 02: PRODUCTION</div>
-            <h3 className="text-5xl font-serif italic text-white mb-2 group-hover:text-secondary transition-colors">50+</h3>
-            <p className="font-mono text-sm text-slate-400 uppercase tracking-widest">Stories Told</p>
-          </div>
-          <div className="p-12 text-center group hover:bg-slate-900 transition-colors duration-500">
-            <div className="font-mono text-xs text-slate-500 mb-4 tracking-widest">SCENE 03: ACCESS</div>
-            <h3 className="text-5xl font-serif italic text-white mb-2 group-hover:text-primary transition-colors">100%</h3>
-            <p className="font-mono text-sm text-slate-400 uppercase tracking-widest">Scholarships</p>
-          </div>
+      {/* ── Impact Dashboard ─────────────────────────────────────────────── */}
+      <section aria-labelledby="impact-heading" className="py-24 bg-surface-highlight">
+        <div className="max-w-6xl mx-auto px-6">
+          <ImpactDashboard />
         </div>
-      </Section>
+      </section>
 
-      {/* Mission / Video Showcase */}
-      <Section bg="dark">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-5 relative">
-            <div className="absolute -top-10 -left-10 w-32 h-32 border-t-2 border-l-2 border-primary/30 hidden md:block"></div>
-            <h2 className="text-4xl md:text-6xl font-serif mb-8 text-white">The Art of<br /><span className="italic text-slate-500">Connecting.</span></h2>
-            <p className="text-lg text-slate-400 mb-8 leading-relaxed font-light">
-              We believe film is the ultimate medium for community restoration. By providing the tools to tell personal narratives, we bridge the gap between neighbors and preserve the living history of Ocoee.
+      {/* ── Mission / Video ──────────────────────────────────────────────── */}
+      <section aria-labelledby="mission-heading" className="py-28 bg-background">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <p className="font-mono text-[10px] text-primary uppercase tracking-[0.4em] mb-4 font-bold opacity-60">
+              The Vision
             </p>
-            <ul className="space-y-6 mb-12">
+            <h2 id="mission-heading" className="text-4xl md:text-5xl font-bold text-text mb-6 font-display tracking-tight">
+              The Art of <em className="text-primary not-italic">Connecting.</em>
+            </h2>
+            <p className="text-lg text-text-muted mb-6 leading-relaxed">
+              We believe film is the ultimate medium for community restoration. By providing
+              professional-grade tools and mentorship, we bridge the gap between neighbors and
+              preserve the living history of Ocoee.
+            </p>
+            <ul className="space-y-3 mb-10" role="list">
               {[
-                "Cinema Camera Access (Blackmagic, RED)",
-                "Directorial Mentorships",
-                "Color Grading & Sound Design Labs",
-              ].map((item, i) => (
-                <li key={i} className="flex items-center text-slate-300 font-mono text-sm tracking-wide">
-                  <span className="w-8 h-[1px] bg-primary mr-4"></span>
-                  {item.toUpperCase()}
+                'Cinema Camera Access (Blackmagic, RED)',
+                'Directorial Mentorships with working filmmakers',
+                'Color Grading & Sound Design Labs',
+                'Community screening events open to all',
+              ].map((item) => (
+                <li key={item} className="flex items-center text-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3 shrink-0" aria-hidden="true" />
+                  {item}
                 </li>
               ))}
             </ul>
-            <Link to="/about">
-              <Button variant="outline">Read The Story</Button>
+            <Link to="/programs">
+              <Button variant="outline" className="focus:ring-4 focus:ring-primary/50">
+                Explore Programs →
+              </Button>
             </Link>
           </div>
 
-          <div className="lg:col-span-7 relative">
-            {/* Artistic Video Placeholder */}
-            <div className="relative aspect-video bg-black border border-slate-700 p-2 group cursor-pointer overflow-hidden">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none z-10"></div>
-              <img src="/assets/brand/studio-editing.png" alt="Showcase Reel" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000 filter grayscale group-hover:grayscale-0" />
+          <VideoPlayer
+            src="https://storage.googleapis.com/rebuilt-village-assets/promo/village-story-v1.mp4"
+            poster="https://storage.googleapis.com/rebuilt-village-assets/promo/poster-01.jpg"
+            title="The Art of Connecting — Rebuilt Village 2024"
+          />
+        </div>
+      </section>
 
-              <div className="absolute inset-0 flex items-center justify-center z-20">
-                <div className="w-24 h-24 border border-white/30 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-90 transition-transform duration-500">
-                  <Play size={32} className="text-white fill-white ml-2" />
-                </div>
-              </div>
+      {/* ── Testimonials ─────────────────────────────────────────────────── */}
+      <section aria-labelledby="testimonials-heading" className="py-24 bg-surface-highlight">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <p className="font-mono text-[10px] text-primary uppercase tracking-[0.4em] mb-4 font-bold opacity-60">
+            Community Voices
+          </p>
+          <h2 id="testimonials-heading" className="text-3xl md:text-4xl font-serif italic text-text mb-16">
+            In Their Own Words
+          </h2>
 
-              {/* Film Strip Accents */}
-              <div className="absolute top-0 left-0 bottom-0 w-8 bg-black z-20 flex flex-col justify-between py-2 border-r border-slate-800">
-                {[...Array(8)].map((_, i) => <div key={i} className="w-4 h-6 bg-slate-900 mx-auto rounded-sm"></div>)}
-              </div>
-              <div className="absolute top-0 right-0 bottom-0 w-8 bg-black z-20 flex flex-col justify-between py-2 border-l border-slate-800">
-                {[...Array(8)].map((_, i) => <div key={i} className="w-4 h-6 bg-slate-900 mx-auto rounded-sm"></div>)}
-              </div>
-            </div>
+          <div className="relative" style={{ minHeight: '220px' }} aria-live="polite" aria-atomic="true">
+            {TESTIMONIALS.map((t, i) => (
+              <motion.blockquote
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: i === activeTestimonial ? 1 : 0 }}
+                transition={{ duration: 0.8 }}
+                className={`absolute inset-0 ${i === activeTestimonial ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                aria-hidden={i !== activeTestimonial}
+              >
+                <p className="text-xl md:text-2xl font-serif italic text-text leading-relaxed mb-8">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <footer>
+                  <strong className="block text-sm font-mono uppercase tracking-widest text-primary">{t.name}</strong>
+                  <cite className="text-xs text-text-muted not-italic">{t.role}</cite>
+                </footer>
+              </motion.blockquote>
+            ))}
+          </div>
+
+          <div className="flex justify-center gap-3 mt-16" role="tablist" aria-label="Testimonial navigation">
+            {TESTIMONIALS.map((_, i) => (
+              <button
+                key={i}
+                role="tab"
+                aria-selected={i === activeTestimonial}
+                aria-label={`Testimonial ${i + 1}`}
+                onClick={() => setActiveTestimonial(i)}
+                className={`h-0.5 transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-primary ${i === activeTestimonial ? 'bg-primary w-8' : 'bg-border hover:bg-text-muted w-4'
+                  }`}
+              />
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Call to Action */}
-      <Section bg="black" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/assets/brand/hero-students.png')] opacity-10 bg-cover bg-center"></div>
-        <div className="relative z-10 text-center max-w-3xl mx-auto border-t border-b border-white/10 py-16">
-          <Film size={48} className="mx-auto text-primary mb-8 animate-pulse" />
-          <h2 className="text-5xl md:text-7xl font-serif italic text-white mb-8">Credits Roll.</h2>
-          <p className="text-slate-400 text-lg font-mono max-w-xl mx-auto mb-12 uppercase tracking-widest">
-            Be part of the production. Support the arts in Ocoee.
+      {/* ── Programs preview ─────────────────────────────────────────────── */}
+      <section aria-labelledby="programs-preview-heading" className="py-28 bg-background">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+            <div>
+              <p className="font-mono text-[10px] text-primary uppercase tracking-[0.4em] mb-4 font-bold opacity-60">Current Season</p>
+              <h2 id="programs-preview-heading" className="text-4xl md:text-5xl font-bold text-text font-display tracking-tight">
+                Our Programs
+              </h2>
+            </div>
+            <Link to="/programs">
+              <Button variant="outline" className="shrink-0">View All Programs →</Button>
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                tag: 'Youth · Ages 14–18',
+                title: 'Cinematography Bootcamp',
+                desc: 'Eight weeks of hands-on training with Blackmagic cameras, lighting rigs, and post-production labs. No experience required.',
+                dot: 'bg-blue-500',
+              },
+              {
+                tag: 'Community · All Ages',
+                title: 'Narrative Preservation',
+                desc: 'A documentary workshop helping Ocoee families capture and preserve their personal histories before they\'re lost to time.',
+                dot: 'bg-amber-500',
+              },
+              {
+                tag: 'Advanced · 18+',
+                title: 'Director\'s Masterclass',
+                desc: 'A mentorship-intensive program pairing emerging local directors with working professionals in the Florida film industry.',
+                dot: 'bg-emerald-500',
+              },
+            ].map((prog) => (
+              <article
+                key={prog.title}
+                className="group border border-border hover:border-primary transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 p-8 bg-surface"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${prog.dot}`} aria-hidden="true" />
+                  <span className="text-[10px] font-mono text-text-muted uppercase tracking-widest">{prog.tag}</span>
+                </div>
+                <h3 className="text-2xl font-serif italic text-text mb-3 leading-tight group-hover:text-primary transition-colors duration-300">
+                  {prog.title}
+                </h3>
+                <p className="text-sm text-text-muted leading-relaxed mb-6">{prog.desc}</p>
+                <Link to="/programs" className="text-[10px] font-mono text-primary uppercase tracking-widest hover:underline">
+                  Program Details →
+                </Link>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Donate CTA ───────────────────────────────────────────────────── */}
+      <section aria-labelledby="donate-cta-heading" className="py-24 bg-primary/5 border-t border-primary/10">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <p className="font-mono text-[10px] text-primary uppercase tracking-[0.4em] mb-4 font-bold opacity-60">
+            Make It Happen
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
+          <h2 id="donate-cta-heading" className="text-4xl md:text-5xl font-serif italic text-text mb-6">
+            Every Frame Starts<br />with Your Gift
+          </h2>
+          <p className="text-lg text-text-muted mb-10 leading-relaxed">
+            100% of youth program costs are covered by community donors. Your donation is fully tax-deductible.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/donate">
-              <Button variant="secondary" size="lg">
-                Executive Producer (Donate)
-              </Button>
+              <Button size="lg" className="w-full sm:w-auto focus:ring-4 focus:ring-primary/50">Donate Now</Button>
             </Link>
             <Link to="/contact">
-              <Button variant="ghost" size="lg">
-                Join Crew (Volunteer)
-              </Button>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto focus:ring-4 focus:ring-primary/50">Partner With Us</Button>
             </Link>
           </div>
+          <p className="mt-6 text-xs font-mono text-text-muted/60 uppercase tracking-widest">
+            501(c)(3) · Ocoee, FL · Born from Rebuilt Minds
+          </p>
         </div>
-      </Section>
-    </>
+      </section>
+
+      {/* ── Partner / Sponsor bar ────────────────────────────────────────── */}
+      <section aria-labelledby="sponsors-heading" className="py-16 bg-surface border-t border-border">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 id="sponsors-heading" className="text-center font-mono text-[10px] text-text-muted uppercase tracking-[0.4em] mb-10 opacity-40">
+            Supporters &amp; Community Partners
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-10 opacity-50">
+            {[
+              'Dr. Phillips High School',
+              'Rebuilt Minds',
+              'JC Lighting',
+              'All The Line Studio',
+              'John H. Jackson Community Center',
+            ].map((name) => (
+              <span key={name} className="text-sm font-mono text-text-muted uppercase tracking-widest">
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+    </article >
   );
 };

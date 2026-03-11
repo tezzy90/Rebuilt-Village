@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Offline — Rebuilt Village</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Georgia, serif;
+      background: #0a0a0a;
+      color: #f5f5f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container { max-width: 480px; text-align: center; }
+    .icon { font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.4; }
+    h1 { font-size: 3rem; font-style: italic; font-weight: 400; margin-bottom: 1rem; line-height: 1.1; }
+    p { color: #9a9a8e; line-height: 1.7; margin-bottom: 2rem; }
+    .tag { font-family: monospace; font-size: 0.625rem; letter-spacing: 0.3em; text-transform: uppercase; color: #9a9a8e; opacity: 0.4; margin-bottom: 1rem; }
+    a {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      border: 1px solid #f5f5f0;
+      color: #f5f5f0;
+      text-decoration: none;
+      font-family: monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    a:hover { background: #f5f5f0; color: #0a0a0a; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🎞</div>
+    <p class="tag">No Connection</p>
+    <h1>Cut to Black.</h1>
+    <p>Looks like you're offline. Check your connection and try again — the story will be here when you're back.</p>
+    <a href="/" onclick="window.location.reload()">Reload Page</a>
+  </div>
+</body>
+</html>
