@@ -84,6 +84,7 @@
 - **Logo assets** — Generated `logo.png` (900×700, #0A0A0A background) + `logo@2x.png` (1800×1400 retina) from `logo-dark.svg`. Both saved to `public/assets/brand/`. ViewfinderNav already points at `logo.png`.
 - **Logo SVGs** — `logo-dark.svg` + `logo-light.svg` created (v5 architecture: 8 trunk strands from shared origin 450,525, unified trunk, left/center/right branch structure, gold typography).
 - **Phase 5 Accessibility** — Completed `useReducedMotion` gating in 5 files: Events, Contact, DonateSuccess, Programs, ImpactDashboard. ImpactDashboard bar-chart width animation skips directly to final value when prefers-reduced. Accessibility statement page created at `/accessibility`, linked from Footer. `@axe-core/react` installed and wired in DEV mode via `import.meta.env.DEV` guard.
+- **Phase 7 UI/UX Benchmarking & Upgrades** — Conducted full UI/UX audit against top 10 global NPOs. Replaced weak contrast across global footer. Implemented 4 custom high-conversion UX features: global Sticky Donate Bar (`App.tsx`), Action Pathways (`Home.tsx`), Form Tier Micro-Interactions (`Donate.tsx`), and a "Where the Money Goes" visual funding chart (`ImpactDashboard.tsx`). Local browser confirmed Framer Motion behaviors.
 - **vite.config.ts** — Updated `allowedHosts: true` (Vite 6 tunneling), port set to 5173.
 - **Dev preview** — Site rendered via Cloudflare tunnel. All sections confirmed rendering: hero, Radical Impact transparency, testimonials, program cards, donate CTA, partners, footer.
 
@@ -182,6 +183,14 @@
 - `public/sitemap.xml`: all 12 routes with changefreq + priority
 - `index.html`: FAQPage JSON-LD (8 Q&As, eligible for Google rich results), Event JSON-LD (Film-apalooza + Summer Camp, eligible for Google Events carousel), `foundingDate` corrected to 2025-01-07, fake taxID removed, `<link rel="alternate" href="/llms.txt">` added
 - `/faq` added to Footer Organization column and bottom legal strip
+
+### Phase 7 — Competitive UX Implementations ✅ COMPLETE
+
+- `App.tsx`: Added global `StickyDonateBar` that triggers on scroll for frictionless giving
+- `Donate.tsx`: Added Framer Motion micro-interactions (spring pops) to donor tiers and restricted projects
+- `ImpactDashboard.tsx`: Built multi-colored animated data visualization showing exactly where the money goes
+- `Home.tsx`: Added Direct Action Pathways (Learn, Volunteer, Donate) in a glowing 3-column layout below the hero
+- Fixed contrast on the global Dark Mode Footer (`Footer.tsx`) to improve default readability for older donors without requiring hover states
 
 ---
 

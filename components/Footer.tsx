@@ -212,11 +212,11 @@ export const Footer: React.FC = () => {
                 <span className="font-display font-bold text-xl text-primary tracking-wide" aria-label={stat.value}>
                   {stat.value}
                 </span>
-                <span className="font-mono text-[10px] text-text-muted uppercase tracking-widest">
+                <span className="font-mono text-[10px] text-white/70 uppercase tracking-widest">
                   {stat.label}
                 </span>
                 {i < STATS.length - 1 && (
-                  <span className="hidden sm:block w-px h-5 bg-border/60 ml-3" aria-hidden="true" />
+                  <span className="hidden sm:block w-px h-5 bg-border/40 ml-3" aria-hidden="true" />
                 )}
               </motion.li>
             ))}
@@ -247,19 +247,19 @@ export const Footer: React.FC = () => {
                 <span className="font-display font-semibold text-primary uppercase tracking-[0.18em] text-sm group-hover:text-brand-gold-light transition-colors">
                   Rebuilt Village
                 </span>
-                <span className="font-mono text-[9px] text-text-muted/50 uppercase tracking-[0.25em] mt-1">
+                <span className="font-mono text-[9px] text-white/50 uppercase tracking-[0.25em] mt-1">
                   Est. 2025 · Ocoee, FL
                 </span>
               </div>
             </Link>
 
             {/* Tagline */}
-            <p className="font-serif text-text-muted text-sm leading-relaxed mb-6 max-w-xs">
+            <p className="font-serif text-white/80 text-sm leading-relaxed mb-6 max-w-xs">
               Enriching the community through the art of film. We empower local voices to capture personal stories and preserve them for future generations.
             </p>
 
             {/* Location */}
-            <div className="flex items-start gap-2 mb-8 text-text-muted/60">
+            <div className="flex items-start gap-2 mb-8 text-white/70">
               <MapPin size={13} className="text-primary mt-0.5 shrink-0" aria-hidden="true" />
               <span className="font-mono text-[10px] uppercase tracking-widest leading-relaxed">
                 Ocoee, Florida 34761<br />Orange County
@@ -270,11 +270,11 @@ export const Footer: React.FC = () => {
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <Mail size={12} className="text-primary" aria-hidden="true" />
-                <span className="font-display text-xs font-medium text-text uppercase tracking-widest">
+                <span className="font-display text-xs font-medium text-white uppercase tracking-widest">
                   The Call Sheet
                 </span>
               </div>
-              <p className="font-mono text-[10px] text-text-muted/60 uppercase tracking-widest mb-4">
+              <p className="font-mono text-[10px] text-white/60 uppercase tracking-widest mb-4">
                 News, screenings & community updates.
               </p>
               <NewsletterSignup />
@@ -282,7 +282,7 @@ export const Footer: React.FC = () => {
 
             {/* Social links */}
             <div>
-              <p className="font-mono text-[10px] text-text-muted/40 uppercase tracking-widest mb-3">Follow Us</p>
+              <p className="font-mono text-[10px] text-white/50 uppercase tracking-widest mb-3">Follow Us</p>
               <div className="flex items-center gap-2" role="list" aria-label="Social media links">
                 {SOCIALS.map(social => (
                   <a
@@ -327,7 +327,7 @@ export const Footer: React.FC = () => {
                     style={{ backgroundColor: col.color }}
                     aria-hidden="true"
                   />
-                  <h3 className="font-mono text-[10px] font-bold uppercase tracking-widest text-text-muted/60">
+                  <h3 className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/70">
                     {col.heading}
                   </h3>
                 </div>
@@ -338,7 +338,7 @@ export const Footer: React.FC = () => {
                       <Link
                         to={link.path}
                         className={[
-                          'font-mono text-[11px] text-text-muted uppercase tracking-widest',
+                          'font-mono text-[11px] text-white/60 uppercase tracking-widest',
                           'hover:text-primary transition-colors duration-200',
                           'focus:outline-none focus:ring-2 focus:ring-primary/60 rounded',
                           'inline-block',
@@ -360,10 +360,10 @@ export const Footer: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-              <p className="font-display text-sm font-medium text-text uppercase tracking-widest mb-1">
+              <p className="font-display text-sm font-medium text-white uppercase tracking-widest mb-1">
                 Ready to make an impact?
               </p>
-              <p className="font-mono text-[10px] text-text-muted/60 uppercase tracking-widest">
+              <p className="font-mono text-[10px] text-white/70 uppercase tracking-widest">
                 Every gift is tax-deductible · 85¢ of every dollar funds programs
               </p>
             </div>
@@ -395,15 +395,15 @@ export const Footer: React.FC = () => {
 
             {/* Left: legal copy */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
-              <p className="font-mono text-[9px] text-text-muted/40 uppercase tracking-widest">
+              <p className="font-mono text-[9px] text-white/50 uppercase tracking-widest">
                 © {year} Rebuilt Village, Inc.
               </p>
               <span className="hidden sm:block w-px h-3 bg-border/40" aria-hidden="true" />
-              <p className="font-mono text-[9px] text-text-muted/40 uppercase tracking-widest">
+              <p className="font-mono text-[9px] text-white/50 uppercase tracking-widest">
                 501(c)(3) Nonprofit
               </p>
               <span className="hidden sm:block w-px h-3 bg-border/40" aria-hidden="true" />
-              <p className="font-mono text-[9px] text-text-muted/40 uppercase tracking-widest">
+              <p className="font-mono text-[9px] text-white/50 uppercase tracking-widest">
                 EIN: 93-XXXXXXX
               </p>
             </div>
@@ -420,8 +420,8 @@ export const Footer: React.FC = () => {
                   key={link.path}
                   to={link.path}
                   className={[
-                    'font-mono text-[9px] text-text-muted/40 uppercase tracking-widest',
-                    'hover:text-text-muted transition-colors duration-200',
+                    'font-mono text-[9px] text-white/50 uppercase tracking-widest',
+                    'hover:text-white/80 transition-colors duration-200',
                     'focus:outline-none focus:ring-2 focus:ring-primary/60 rounded',
                   ].join(' ')}
                 >
@@ -435,7 +435,7 @@ export const Footer: React.FC = () => {
                   className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"
                   aria-hidden="true"
                 />
-                <span className="font-mono text-[9px] text-text-muted/50 uppercase tracking-widest">
+                <span className="font-mono text-[9px] text-white/60 uppercase tracking-widest">
                   Radical Transparency
                 </span>
               </div>
