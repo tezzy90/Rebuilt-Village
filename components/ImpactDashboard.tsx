@@ -97,31 +97,48 @@ export const ImpactDashboard: React.FC = () => {
               ensuring your community donations go directly to gear, labs, and mentorship.
             </p>
           </div>
-          <div className="bg-background/40 border border-border p-6 relative">
-             <div className="flex items-center justify-between mb-4">
-               <span className="font-mono text-[10px] uppercase tracking-widest text-text-muted">Funding Allocation</span>
-               <PieChart size={16} className="text-primary opacity-40" />
+          <div className="bg-background/40 border border-border p-8 relative flex flex-col justify-between">
+             <div className="flex items-center justify-between mb-8">
+               <span className="font-mono text-[10px] uppercase tracking-[0.3em] font-bold text-primary">Where the Money Goes</span>
+               <PieChart size={18} className="text-primary opacity-[0.85]" />
              </div>
+             
+             {/* Large unified impact bar */}
+             <div className="w-full h-8 flex rounded-sm overflow-hidden mb-8 shadow-inner shadow-black/50">
+                <motion.div 
+                  initial={{ width: 0 }} whileInView={{ width: '60%' }} transition={{ duration: 1.2, ease: "easeOut" }} viewport={{ once: true }}
+                  className="h-full bg-primary relative group cursor-pointer"
+                  title="60% - Student Gear & Labs"
+                />
+                <motion.div 
+                  initial={{ width: 0 }} whileInView={{ width: '25%' }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }} viewport={{ once: true }}
+                  className="h-full bg-[#1e293b] border-l border-black/20 cursor-pointer"
+                  title="25% - Professional Mentorship"
+                />
+                <motion.div 
+                  initial={{ width: 0 }} whileInView={{ width: '15%' }} transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }} viewport={{ once: true }}
+                  className="h-full bg-border border-l border-black/20 cursor-pointer"
+                  title="15% - Community Screenings"
+                />
+             </div>
+
              <div className="space-y-4">
                 {[
                   { label: 'Student Gear & Labs', pct: '60%', color: 'bg-primary' },
-                  { label: 'Professional Mentorship', pct: '25%', color: 'bg-primary/60' },
-                  { label: 'Community Screenings', pct: '15%', color: 'bg-primary/30' },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <div className="flex justify-between text-[11px] font-mono text-text-muted uppercase tracking-widest mb-2">
-                      <span>{item.label}</span>
-                      <span>{item.pct}</span>
+                  { label: 'Professional Mentorship', pct: '25%', color: 'bg-[#1e293b]' },
+                  { label: 'Community Screenings', pct: '15%', color: 'bg-border' },
+                ].map((item, i) => (
+                  <motion.div 
+                    key={item.label}
+                    initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + (i * 0.1) }} viewport={{ once: true }}
+                    className="flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.2em] group hover:bg-white/5 p-2 rounded transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`w-3 h-3 rounded-sm ${item.color} shadow-sm shadow-black/50`} />
+                      <span className="text-text group-hover:text-primary transition-colors">{item.label}</span>
                     </div>
-                    <div className="h-[2px] bg-border overflow-hidden">
-                      <motion.div
-                        initial={{ width: prefersReduced ? item.pct : 0 }}
-                        whileInView={{ width: item.pct }}
-                        transition={{ duration: prefersReduced ? 0 : 1, ease: "easeOut" }}
-                        className={`h-full ${item.color}`}
-                      />
-                    </div>
-                  </div>
+                    <span className="text-text-muted font-bold">{item.pct}</span>
+                  </motion.div>
                 ))}
              </div>
           </div>

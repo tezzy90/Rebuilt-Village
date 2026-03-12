@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import React, { Suspense, lazy, useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Link } from 'react-router-dom';
 import { Analytics } from './components/Analytics';
 import { Button } from './components/Button';
 import { CookieConsentBanner as CookieConsent } from './components/CookieConsent';
@@ -29,7 +29,12 @@ const ProgramsPage = lazy(() => import('./pages/Programs').then(m => ({ default:
 const ContactPage = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 const AccessibilityPage = lazy(() => import('./pages/Accessibility').then(m => ({ default: m.Accessibility })));
 
+import { motion, useScroll, useTransform } from 'framer-motion';
+
 const ImpactTicker = () => {
+  const { scrollY } = useScroll();
+  const opacity = useTransform(scrollY, [0, 50], [1, 0]);
+
   const metrics = [
     "150+ YOUTH TRAINED",
     "501(c)(3) VERIFIED",
@@ -40,7 +45,7 @@ const ImpactTicker = () => {
   ];
 
   return (
-    <div className="impact-ticker text-[9px] py-1.5 overflow-hidden sticky top-0 z-[60]" role="marquee" aria-label="Impact statistics">
+    <motion.div style={{ opacity }} className="impact-ticker h-8 flex items-center text-[9px] overflow-hidden sticky top-0 z-[60]" role="marquee" aria-label="Impact statistics">
       <div className="flex whitespace-nowrap animate-marquee">
         {[...metrics, ...metrics].map((text, i) => (
           <span key={i} className="mx-8 font-mono font-bold tracking-[0.3em] text-brand-black" aria-hidden={i >= metrics.length}>
@@ -48,7 +53,31 @@ const ImpactTicker = () => {
           </span>
         ))}
       </div>
-    </div>
+    </motion.div>
+  );
+};
+
+const StickyDonateBar = () => {
+  const { scrollY } = useScroll();
+  // Slide up from 100px below window to 0 offset when scrolled past 600px
+  const y = useTransform(scrollY, [600, 800], [100, 0]);
+  const opacity = useTransform(scrollY, [600, 800], [0, 1]);
+
+  return (
+    <motion.div
+      style={{ y, opacity }}
+      className="fixed bottom-0 left-0 right-0 z-[100] bg-primary text-brand-black px-6 py-4 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto"
+    >
+      <div className="flex items-center gap-4">
+        <span className="w-2 h-2 rounded-full bg-brand-black animate-pulse" />
+        <p className="font-serif italic font-bold">Every frame starts with your gift.</p>
+      </div>
+      <Link to="/donate">
+        <Button size="sm" className="bg-brand-black text-white hover:bg-black w-full sm:w-auto shadow-xl">
+          Donate Now
+        </Button>
+      </Link>
+    </motion.div>
   );
 };
 
@@ -344,8 +373,8 @@ export default function App() {
               </Routes>
             </Suspense>
           </main>
-
           <Footer />
+          <StickyDonateBar />
           <CookieConsent />
           <Analytics />
         </div>

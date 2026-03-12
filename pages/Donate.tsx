@@ -11,6 +11,7 @@ import {
 import React, { useState } from 'react';
 import { useProjectBalances } from '../services/projectBalancesService';
 import { Link, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { BRAND, donorTierForAmount } from '@/src/brand';
 import { Section } from '../components/Section';
 
@@ -403,14 +404,16 @@ export const Donate: React.FC = () => {
                     const pct        = Math.min(100, Math.round((raised / project.goal) * 100));
                     const isSelected = projectId === project.id;
                     return (
-                      <button
+                      <motion.button
+                        whileHover={{ x: 4 }}
+                        whileTap={{ scale: 0.98 }}
                         key={project.id}
                         onClick={() => setProjectId(project.id)}
                         aria-pressed={isSelected}
                         className={`w-full text-left p-4 border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 ${
                           isSelected
-                            ? 'bg-surface/60'
-                            : 'border-border bg-surface-highlight hover:border-text-muted'
+                            ? 'bg-surface/60 shadow-md'
+                            : 'border-border bg-surface-highlight hover:border-text-muted/50'
                         }`}
                         style={
                           isSelected
@@ -446,10 +449,13 @@ export const Donate: React.FC = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="h-1.5 bg-border rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${pct}%`, backgroundColor: project.color }}
+                        <div className="h-1.5 bg-border rounded-full overflow-hidden shadow-inner">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="h-full rounded-full"
+                            style={{ backgroundColor: project.color }}
                             role="progressbar"
                             aria-valuenow={pct}
                             aria-valuemin={0}
@@ -460,7 +466,7 @@ export const Donate: React.FC = () => {
                         <div className="mt-1.5 text-[9px] font-mono text-text-muted/60 uppercase tracking-widest">
                           {pct}% funded
                         </div>
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -480,14 +486,16 @@ export const Donate: React.FC = () => {
                 {TIERS.map((tier) => {
                   const isSelected = amount === tier.amount && !customAmount;
                   return (
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.95 }}
                       key={tier.key}
                       onClick={() => handlePresetSelect(tier.amount)}
                       aria-pressed={isSelected}
                       className={`relative p-4 border transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-primary/50 ${
                         isSelected
-                          ? 'border-primary'
-                          : 'border-border bg-surface-highlight hover:border-text-muted'
+                          ? 'border-primary shadow-lg shadow-primary/20 glow-gold'
+                          : 'border-border bg-surface-highlight hover:border-text-muted hover:bg-surface/80'
                       }`}
                       style={
                         isSelected
@@ -496,7 +504,7 @@ export const Donate: React.FC = () => {
                       }
                     >
                       {tier.popular && (
-                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-mono text-[7px] uppercase tracking-widest px-1.5 py-0.5">
+                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-mono text-[7px] uppercase tracking-[0.2em] px-2 py-1 shadow-sm font-bold">
                           Popular
                         </div>
                       )}
@@ -515,7 +523,7 @@ export const Donate: React.FC = () => {
                       <div className="text-[10px] text-text-muted leading-tight hidden sm:block">
                         {tier.impact}
                       </div>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>

@@ -114,7 +114,8 @@ export const Home: React.FC = () => {
             </p>
             <h1
               id="hero-heading"
-              className="text-6xl md:text-8xl lg:text-[10rem] font-bold text-white mb-8 font-display tracking-tighter leading-none"
+              className="text-6xl md:text-8xl font-bold text-white mb-8 font-display tracking-tighter leading-none"
+              style={{ fontSize: 'clamp(4rem, 10vw, 10rem)' }}
             >
               Life, <em className="text-primary not-italic">Framed.</em>
             </h1>
@@ -123,31 +124,36 @@ export const Home: React.FC = () => {
               personal stories and preserve them for future generations.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4" role="group" aria-label="Primary actions">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8" role="group" aria-label="Primary actions">
               <Link to="/donate">
-                <Button size="lg" className="w-full sm:w-auto focus:ring-4 focus:ring-primary/50" aria-label="Donate to support film education programs">
-                  Fund the Arts
-                </Button>
-              </Link>
-              <Link to="/programs">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto focus:ring-4 focus:ring-primary/50 border-white/30 text-white hover:border-white"
-                  aria-label="Explore our film education programs"
-                >
-                  Our Programs
+                <Button size="lg" className="w-full sm:w-auto glow-gold-hover border-transparent" aria-label="Donate to support film education programs">
+                  Make an Impact
                 </Button>
               </Link>
             </div>
           </motion.div>
         </div>
 
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-primary animate-bounce z-20" aria-hidden="true">
-          <div className="w-6 h-10 border-2 border-primary rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-primary rounded-full mt-2" />
+        {/* ── Sub-navigation Direct Action Pathways ── */}
+        <motion.div 
+          initial={prefersReducedMotion ? {} : { y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, delay: 0.6 }}
+          className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black via-black/80 to-transparent pt-32 pb-8 px-6 hidden md:block"
+        >
+          <div className="max-w-5xl mx-auto grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
+            {[
+               { title: "Fund the Arts", sub: "100% Impact Rating", link: "/donate" },
+               { title: "Enroll a Student", sub: "Ages 14-18", link: "/programs" },
+               { title: "Attend Screening", sub: "Local Events", link: "/events" }
+            ].map((path) => (
+              <Link key={path.title} to={path.link} className="group flex flex-col items-center text-center p-4 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                 <h3 className="font-serif italic text-white text-xl group-hover:text-primary transition-colors">{path.title}</h3>
+                 <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/50 mt-2">{path.sub}</span>
+              </Link>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── Impact Dashboard ─────────────────────────────────────────────── */}
