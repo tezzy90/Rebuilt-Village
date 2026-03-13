@@ -324,7 +324,7 @@ export const ViewfinderNav: React.FC = () => {
       <header
         role="banner"
         className={[
-          'fixed top-0 left-0 right-0 z-50',
+          'fixed top-8 left-0 right-0 z-50',
           'transition-all duration-500',
           // Impact ticker is sticky above this; header sits below it
           transparent
@@ -344,7 +344,7 @@ export const ViewfinderNav: React.FC = () => {
             >
               {/* Actual logo image */}
               <img
-                src="/assets/brand/logo.png"
+                src="/assets/brand/logo-dark.svg"
                 alt=""
                 aria-hidden="true"
                 className="h-9 md:h-11 w-auto object-contain"
