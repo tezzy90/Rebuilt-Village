@@ -388,7 +388,7 @@ export const ViewfinderNav: React.FC = () => {
                           isActive
                             ? 'text-primary'
                             : transparent
-                              ? 'text-white/65 hover:text-white'
+                              ? 'text-white/65 hover:text-white dark:text-white/65 dark:hover:text-white drop-shadow-md'
                               : 'text-text-muted hover:text-text',
                         ].join(' ')}
                       >
