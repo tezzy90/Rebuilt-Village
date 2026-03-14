@@ -301,7 +301,9 @@ export const ViewfinderNav: React.FC = () => {
   const hamburgerRef                = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 72);
+    // Threshold matches the ImpactTicker fade range (0–50px) so the nav
+    // slides up to top-0 exactly as the ticker becomes invisible.
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -324,12 +326,12 @@ export const ViewfinderNav: React.FC = () => {
       <header
         role="banner"
         className={[
-          'fixed top-8 left-0 right-0 z-50',
+          // Slide from top-8 (below ticker) to top-0 (ticker gone) as user scrolls
+          scrolled ? 'fixed top-0 left-0 right-0 z-50' : 'fixed top-8 left-0 right-0 z-50',
           'transition-all duration-500',
-          // Impact ticker is sticky above this; header sits below it
           transparent
             ? 'bg-transparent border-b border-transparent'
-            : 'bg-brand-black/96 backdrop-blur-md border-b border-primary/12 shadow-[0_2px_40px_rgba(0,0,0,0.5)]',
+            : 'bg-brand-black/95 backdrop-blur-md border-b border-primary/12 shadow-xl',
         ].join(' ')}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -344,10 +346,9 @@ export const ViewfinderNav: React.FC = () => {
             >
               {/* Actual logo image */}
               <img
-                src="/assets/brand/logo-dark.svg"
-                alt=""
-                aria-hidden="true"
-                className="h-9 md:h-11 w-auto object-contain"
+                src="/assets/brand/logo.png"
+                alt="Rebuilt Village Logo"
+                className="h-9 md:h-11 w-auto object-contain bg-brand-black"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               {/* Text wordmark — shown alongside or as fallback */}

@@ -37,10 +37,10 @@
   /* ── Dark mode (native logo background) ─────────────────────────────────── */
   .dark {
     --background:          10  10  10;  /* logo black — #0A0A0A    */
-    --surface:             22  22  22;  /* #161616                 */
+    --surface:             26  26  26;  /* #1A1A1A                 */
     --surface-highlight:   32  30  26;  /* very dark warm gray     */
     --text:               255 252 240;  /* warm white              */
-    --text-muted:         170 162 140;  /* warm medium gray        */
+    --text-muted:         195 188 170;  /* lighter warm gray       */
 
     --primary:           201 168  76;   /* gold unchanged          */
     --primary-foreground:  10  10  10;
@@ -63,9 +63,9 @@
 
   /* Smooth focus rings using brand gold */
   :focus-visible {
-    outline: 2px solid rgb(var(--primary));
-    outline-offset: 3px;
-    border-radius: 2px;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(10, 10, 10, 1), 0 0 0 4px rgba(201, 168, 76, 0.8), 0 0 20px rgba(201, 168, 76, 0.4);
+    border-radius: 4px;
   }
 }
 
@@ -120,11 +120,14 @@
 
 /* ── Marquee ticker ────────────────────────────────────────────────────── */
 @keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 .animate-marquee {
   animation: marquee 32s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ── Gold rule divider ─────────────────────────────────────────────────── */
@@ -203,6 +206,8 @@
   background: linear-gradient(90deg, #A07830 0%, #C9A84C 30%, #E0C06E 60%, #C9A84C 80%, #A07830 100%);
   background-size: 200% auto;
   animation: shimmer 8s linear infinite;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ── Reduced motion override ─────────────────────────────────────────── */
