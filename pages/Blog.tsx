@@ -48,16 +48,20 @@ export const Blog: React.FC = () => {
 
   return (
     <>
-      <Section bg="dark" className="text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">The Clapperboard</h1>
-        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+      <Section bg="black" className="pt-32 pb-16 text-center">
+        <p className="font-mono text-[10px] text-primary mb-4 uppercase tracking-[0.4em] font-bold opacity-60">
+          From the Studio
+        </p>
+        <h1 className="text-5xl md:text-7xl font-serif italic tracking-tight text-text mb-8 leading-none">The Clapperboard</h1>
+        <div className="h-1 w-24 bg-primary/30 mx-auto mb-10" />
+        <p className="text-xl text-text-muted max-w-2xl mx-auto leading-relaxed font-light">
           News, student spotlights, and filmmaking tips from the Rebuilt Village community.
         </p>
       </Section>
 
-      <Section>
+      <Section bg="black">
         {loading ? (
-          <div className="text-center py-20 text-slate-400">Loading call sheet...</div>
+          <div className="text-center py-20 text-text-muted">Loading call sheet...</div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {(posts.length > 0 ? posts : []).map((post) => (
@@ -69,10 +73,10 @@ export const Blog: React.FC = () => {
                 className="flex flex-col h-full"
               >
                 <div className="flex-grow">
-                  <p className="text-xs text-slate-400 mb-3">
+                  <p className="text-xs text-text-muted mb-3">
                     {formatDate(post.publishedAt)} • By {post.author}
                   </p>
-                  <p className="text-slate-600 mb-4 line-clamp-3">
+                  <p className="text-text-muted mb-4 line-clamp-3">
                     Click to read the full story from the studio.
                   </p>
                 </div>
@@ -82,9 +86,9 @@ export const Blog: React.FC = () => {
               </Card>
             ))}
             {!loading && posts.length === 0 && (
-              <div className="col-span-full text-center py-20 border-2 border-dashed border-slate-800 rounded-xl">
-                <p className="text-slate-500 font-mono uppercase tracking-widest mb-4 italic text-sm">No stories found in the archives</p>
-                <p className="text-slate-400 text-xs italic">Connect Sanity CMS to publish stories.</p>
+              <div className="col-span-full text-center py-20 border-2 border-dashed border-border rounded-xl">
+                <p className="text-text-muted font-mono uppercase tracking-widest mb-4 italic text-sm">No stories found in the archives</p>
+                <p className="text-text-muted/60 text-xs italic">Connect Sanity CMS to publish stories.</p>
               </div>
             )}
           </div>
