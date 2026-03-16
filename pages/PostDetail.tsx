@@ -64,8 +64,12 @@ export const PostDetail: React.FC = () => {
             {/* Hero Image Section */}
             <div className="relative h-[60vh] w-full overflow-hidden">
                 <img
-                    src={post.mainImage ? urlFor(post.mainImage).url() : 'https://picsum.photos/seed/post/1920/1080'}
+                    src={post.mainImage ? urlFor(post.mainImage).width(1920).height(1080).format('webp').url() : 'https://picsum.photos/seed/post/1920/1080'}
                     alt={post.title}
+                    width={1920}
+                    height={1080}
+                    loading="eager"
+                    decoding="async"
                     className="w-full h-full object-cover grayscale opacity-40"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-film-black via-transparent to-transparent"></div>

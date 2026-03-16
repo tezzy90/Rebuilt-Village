@@ -16,7 +16,12 @@ export const Card: React.FC<CardProps> = ({ image, title, subtitle, children, cl
           <img
             src={image}
             alt={title}
+            width={800}
+            height={600}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover filter grayscale contrast-125 transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105"
+            style={{ willChange: 'transform' }}
           />
         </div>
       )}

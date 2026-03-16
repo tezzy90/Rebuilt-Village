@@ -240,6 +240,10 @@ export const Footer: React.FC = () => {
                 src="/assets/brand/logo-dark.svg"
                 alt=""
                 aria-hidden="true"
+                width={48}
+                height={48}
+                loading="eager"
+                decoding="async"
                 className="h-12 w-auto object-contain"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />

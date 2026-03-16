@@ -143,7 +143,12 @@ export const About: React.FC = () => {
               <img
                 src="/assets/brand/team-action.png"
                 alt="Rebuilt Village team working with students"
+                width={800}
+                height={600}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000 transform group-hover:scale-[1.02]"
+                style={{ willChange: 'transform' }}
               />
               {/* Film strip decoration */}
               <div className="absolute top-0 left-0 w-8 h-full bg-surface/20 flex flex-col justify-around py-4 border-r border-border">
