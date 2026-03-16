@@ -11,6 +11,7 @@ import {
 import React, { useState } from 'react';
 import { useProjectBalances } from '../services/projectBalancesService';
 import { Link, useSearchParams } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { motion } from 'framer-motion';
 import { BRAND, donorTierForAmount } from '@/src/brand';
 import { Section } from '../components/Section';
@@ -180,6 +181,10 @@ function annualImpact(monthly: number): string {
 /* ─── Component ──────────────────────────────────────────────────────────── */
 
 export const Donate: React.FC = () => {
+  usePageMeta(
+    'Donate — Rebuilt Village',
+    'Support free film education for Ocoee youth. Your tax-deductible gift goes directly to programs. 85¢ of every dollar funds students.'
+  );
   const [searchParams]                        = useSearchParams();
   const cancelled                             = searchParams.get('cancelled') === 'true';
 

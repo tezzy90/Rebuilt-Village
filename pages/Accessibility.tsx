@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 
 /**
@@ -7,10 +8,10 @@ import { Section } from '../components/Section';
  * Last reviewed: March 2026
  */
 export const Accessibility: React.FC = () => {
-    React.useEffect(() => {
-        document.title = 'Accessibility — Rebuilt Village';
-    }, []);
-
+  usePageMeta(
+    'Accessibility Statement — Rebuilt Village',
+    'Rebuilt Village is committed to making our website accessible to everyone. Learn about our accessibility policies and how to report issues.'
+  );
     return (
         <article aria-labelledby="a11y-heading">
 

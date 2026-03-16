@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Check, Mail, MapPin, Send } from 'lucide-react';
 import React, { useState } from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 
 // ─── Subject options ──────────────────────────────────────────────────────────
@@ -38,6 +39,10 @@ const INFO_CARDS = [
 // ─── Contact page ─────────────────────────────────────────────────────────────
 
 export const Contact: React.FC = () => {
+  usePageMeta(
+    'Contact Us — Rebuilt Village',
+    'Get in touch with the Rebuilt Village team. We respond to inquiries about programs, volunteering, partnerships, and donations.'
+  );
   const prefersReduced = useReducedMotion();
   const [status, setStatus]   = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState<{

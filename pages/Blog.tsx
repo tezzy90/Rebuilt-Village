@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { getPosts, SanityPost } from '../services/sanityService';
 import { urlFor } from '../services/sanityClient';
 
+
 export const Blog: React.FC = () => {
+  usePageMeta(
+    'The Clapperboard — Rebuilt Village',
+    'News, student spotlights, and filmmaking tips from the Rebuilt Village community.'
+  );
   const [posts, setPosts] = useState<SanityPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +67,20 @@ export const Blog: React.FC = () => {
 
       <Section bg="black">
         {loading ? (
-          <div className="text-center py-20 text-text-muted">Loading call sheet...</div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" aria-busy="true" aria-label="Loading posts">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="bg-surface border border-border rounded-xl overflow-hidden animate-pulse">
+                <div className="h-48 bg-border/40" />
+                <div className="p-5 space-y-3">
+                  <div className="h-3 bg-border/40 rounded w-1/3" />
+                  <div className="h-5 bg-border/60 rounded w-4/5" />
+                  <div className="h-3 bg-border/40 rounded w-full" />
+                  <div className="h-3 bg-border/40 rounded w-3/4" />
+                  <div className="h-8 bg-border/30 rounded mt-4" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {(posts.length > 0 ? posts : []).map((post) => (

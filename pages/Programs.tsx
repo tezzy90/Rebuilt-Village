@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Camera, Clock, Clapperboard, Film, MapPin, Users } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 import { getProgramsFull, SanityProgramFull } from '../services/sanityService';
 
@@ -145,6 +146,10 @@ const PARTNERS = [
 
 // ─── Programs page ────────────────────────────────────────────────────────────
 export const Programs: React.FC = () => {
+  usePageMeta(
+    'Programs — Rebuilt Village',
+    'Free professional film education programs for Ocoee youth ages 14–18. Summer camp, narrative preservation workshops, and director masterclasses.'
+  );
   const prefersReduced = useReducedMotion();
   const [programs, setPrograms] = useState<Program[]>(FALLBACK_PROGRAMS);
 

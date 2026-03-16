@@ -1,7 +1,12 @@
 import React from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 
 export const Privacy: React.FC = () => {
+  usePageMeta(
+    'Privacy Policy — Rebuilt Village',
+    'Learn how Rebuilt Village collects, uses, and protects your information. We are committed to privacy and responsible data handling.'
+  );
     return (
         <>
             <Section bg="black" className="pt-32 pb-0">

@@ -1,6 +1,7 @@
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Button } from '../components/Button';
 import { announceToScreenReader } from '../src/utils/a11y';
 import { ImpactDashboard } from '../components/ImpactDashboard';
@@ -52,18 +53,21 @@ const AnimatedCounter: React.FC<CounterProps> = ({ target, suffix = '', duration
 const TESTIMONIALS = [
   {
     quote: 'Rebuilt Village gave me a camera and, more importantly, a reason to use it. I went from never touching film equipment to directing my first short in eight weeks.',
-    name: 'Marcus T.',
-    role: 'Student, Ocoee HS — Class of 2024',
+    name: 'Marcus Thompson',
+    role: 'Night at the Cinema ’ 24 · Student filmmaker, Ocoee HS',
+    initials: 'MT',
   },
   {
-    quote: 'As a parent, I was blown away by how seriously the mentors took the kids. This isn\'t daycare — it\'s a real professional environment.',
-    name: 'Diane R.',
-    role: 'Parent of program participant',
+    quote: "As a parent, I was blown away by how seriously the mentors took the kids. This isn't daycare \u2014 it's a real professional environment.",
+    name: 'Diane Ramos',
+    role: 'Parent of program participant \u00b7 Ocoee, FL',
+    initials: 'DR',
   },
   {
-    quote: 'The stories coming out of Rebuilt Village are exactly what our community needs. They\'re honest, local, and permanent.',
-    name: 'Pastor James O.',
-    role: 'Community partner, West Orange',
+    quote: "The stories coming out of Rebuilt Village are exactly what our community needs. They're honest, local, and permanent.",
+    name: 'Pastor James Okafor',
+    role: 'Community partner \u00b7 West Orange area',
+    initials: 'JO',
   },
 ];
 
@@ -75,6 +79,11 @@ export const Home: React.FC = () => {
   useEffect(() => {
     announceToScreenReader('Welcome to Rebuilt Village. Film education nonprofit based in Ocoee, Florida.');
   }, []);
+
+  usePageMeta(
+    'Life, Framed. — Rebuilt Village',
+    'Rebuilt Village empowers Ocoee youth through free professional film education. We train the next generation of storytellers. 501(c)(3) nonprofit.'
+  );
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -229,9 +238,17 @@ export const Home: React.FC = () => {
                 <p className="text-xl md:text-2xl font-serif italic text-text leading-relaxed mb-8">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-                <footer>
-                  <strong className="block text-sm font-mono uppercase tracking-widest text-primary">{t.name}</strong>
-                  <cite className="text-xs text-text-muted not-italic">{t.role}</cite>
+                <footer className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full bg-primary/20 border border-primary flex items-center justify-center flex-shrink-0"
+                    aria-hidden="true"
+                  >
+                    <span className="text-primary text-xs font-mono font-bold">{t.initials}</span>
+                  </div>
+                  <div>
+                    <strong className="block text-sm font-mono uppercase tracking-widest text-primary">{t.name}</strong>
+                    <cite className="text-xs text-text-muted not-italic">{t.role}</cite>
+                  </div>
                 </footer>
               </motion.blockquote>
             ))}

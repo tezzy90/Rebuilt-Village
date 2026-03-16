@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ChevronDown, Mail } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 
 // ─── FAQ data ─────────────────────────────────────────────────────────────────
@@ -243,6 +244,10 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ item, index, isOpen, onTo
 
 // ─── FAQ Page ─────────────────────────────────────────────────────────────────
 export const FAQ: React.FC = () => {
+  usePageMeta(
+    'FAQ — Rebuilt Village',
+    'Answers to common questions about Rebuilt Village programs, how to donate, volunteer, and enroll youth in film education.'
+  );
   const [openId, setOpenId]         = useState<string | null>(null);
   const [activeCategory, setActiveCat] = useState<FAQItem['category'] | 'all'>('all');
 

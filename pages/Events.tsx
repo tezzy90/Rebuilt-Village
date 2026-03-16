@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Calendar, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Button } from '../components/Button';
 import { Section } from '../components/Section';
 import { Event } from '../types';
@@ -133,6 +134,10 @@ function isPastEvent(event: Event): boolean {
 
 // ─── Events page ─────────────────────────────────────────────────────────────
 export const Events: React.FC = () => {
+  usePageMeta(
+    'Events — Rebuilt Village',
+    'Screenings, workshops, festivals, and community events hosted by Rebuilt Village in Ocoee, Florida. Find upcoming film events and add them to your calendar.'
+  );
   const [events, setEvents] = useState<Event[]>(FALLBACK_EVENTS);
 
   useEffect(() => {

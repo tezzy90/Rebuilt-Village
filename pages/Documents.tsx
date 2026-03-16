@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 import { FileText, Download, ExternalLink, Calendar, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/Button';
@@ -13,6 +14,10 @@ interface Document {
 }
 
 export const Documents: React.FC = () => {
+  usePageMeta(
+    'Public Documents — Rebuilt Village',
+    'Access Rebuilt Village nonprofit public records including our 990 filings, articles of incorporation, grant reports, and bylaws.'
+  );
     const documents: Document[] = [
         {
             title: "Internal Revenue Service Form 990 (2024)",

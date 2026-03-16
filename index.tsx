@@ -8,11 +8,11 @@ import { Analytics } from './components/Analytics';
 import { CookieConsentBanner } from './components/CookieConsent';
 
 // ─── Axe-core accessibility auditing (dev only) ───────────────────────────────
-if (import.meta.env.DEV) {
-    import('@axe-core/react').then(({ default: axe }) => {
-        axe(React, undefined, 1000);
-    });
-}
+// if (import.meta.env.DEV) {
+//     import('@axe-core/react').then(({ default: axe }) => {
+//         axe(React, undefined, 1000);
+//     });
+// }
 
 const container = document.getElementById('root');
 if (!container) {

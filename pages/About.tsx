@@ -1,6 +1,7 @@
 import { FileText, Milestone, ShieldCheck } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Section } from '../components/Section';
@@ -71,7 +72,12 @@ const FALLBACK_TEAM: DisplayMember[] = [
 /* ─── Component ──────────────────────────────────────────────────────────── */
 
 export const About: React.FC = () => {
+  usePageMeta(
+    'Our Story — Rebuilt Village',
+    'Learn how Rebuilt Village is rebuilding community through the art of film. Meet our team and read our origin story.'
+  );
   const [team, setTeam] = useState<DisplayMember[]>(FALLBACK_TEAM);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getTeamMembers()
@@ -92,7 +98,8 @@ export const About: React.FC = () => {
       })
       .catch(() => {
         // Silently keep fallback if Sanity is unreachable
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   return (
@@ -192,17 +199,30 @@ export const About: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {team.map((member) => (
-            <Card
-              key={member.name}
-              title={member.name}
-              subtitle={member.role}
-              image={member.image}
-            >
-              <p className="text-sm leading-relaxed text-text-muted">{member.bio}</p>
-            </Card>
-          ))}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8" aria-busy={isLoading}>
+          {isLoading
+            ? [1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <div key={n} className="bg-surface border border-border rounded-xl overflow-hidden animate-pulse">
+                  <div className="h-48 bg-border/40" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-4 bg-border/60 rounded w-2/3" />
+                    <div className="h-3 bg-border/40 rounded w-1/2" />
+                    <div className="h-3 bg-border/30 rounded w-full mt-3" />
+                    <div className="h-3 bg-border/30 rounded w-5/6" />
+                  </div>
+                </div>
+              ))
+            : team.map((member) => (
+                <Card
+                  key={member.name}
+                  title={member.name}
+                  subtitle={member.role}
+                  image={member.image}
+                >
+                  <p className="text-sm leading-relaxed text-text-muted">{member.bio}</p>
+                </Card>
+              ))
+          }
         </div>
       </Section>
 

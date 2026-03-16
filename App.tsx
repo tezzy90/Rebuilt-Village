@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Route, Routes, Link } from 'react-router-dom';
 import { Analytics } from './components/Analytics';
 import { Button } from './components/Button';
@@ -29,7 +29,8 @@ const ProgramsPage = lazy(() => import('./pages/Programs').then(m => ({ default:
 const ContactPage = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 const AccessibilityPage = lazy(() => import('./pages/Accessibility').then(m => ({ default: m.Accessibility })));
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { ArrowUp } from 'lucide-react';
 
 const ImpactTicker = () => {
   const { scrollY } = useScroll();
@@ -45,7 +46,7 @@ const ImpactTicker = () => {
   ];
 
   return (
-    <motion.div style={{ opacity }} className="impact-ticker h-8 flex items-center text-[9px] overflow-hidden sticky top-0 z-[60]" role="marquee" aria-label="Impact statistics">
+    <motion.div style={{ opacity }} className="impact-ticker h-8 flex items-center text-[11px] overflow-hidden sticky top-0 z-[60]" role="marquee" aria-label="Impact statistics">
       <div className="flex whitespace-nowrap animate-marquee">
         {[...metrics, ...metrics].map((text, i) => (
           <span key={i} className="mx-8 font-mono font-bold tracking-[0.3em] text-brand-black" aria-hidden={i >= metrics.length}>
@@ -57,11 +58,21 @@ const ImpactTicker = () => {
   );
 };
 
-const StickyDonateBar = () => {
+const StickyDonateBar: React.FC<{ footerRef: React.RefObject<HTMLDivElement> }> = ({ footerRef }) => {
   const { scrollY } = useScroll();
-  // Slide up from 100px below window to 0 offset when scrolled past 600px
   const y = useTransform(scrollY, [600, 800], [100, 0]);
   const opacity = useTransform(scrollY, [600, 800], [0, 1]);
+  const [footerVisible, setFooterVisible] = useState(false);
+
+  useEffect(() => {
+    const el = footerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => setFooterVisible(entry.isIntersecting), { threshold: 0.05 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [footerRef]);
+
+  if (footerVisible) return null;
 
   return (
     <motion.div
@@ -78,6 +89,35 @@ const StickyDonateBar = () => {
         </Button>
       </Link>
     </motion.div>
+  );
+};
+
+// ─── Back to Top ─────────────────────────────────────────────────────────────
+const BackToTop: React.FC = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 16 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-24 right-6 z-[110] w-10 h-10 rounded-full bg-primary text-brand-black flex items-center justify-center shadow-xl hover:bg-primary/90 transition-colors"
+          aria-label="Back to top"
+        >
+          <ArrowUp size={18} />
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -279,68 +319,10 @@ const Contact = () => {
   );
 };
 
-// Newsletter Form Component
-const NewsletterForm = () => {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, formType: 'newsletter' }),
-      });
-
-      if (response.ok) {
-        setSubmitted(true);
-      }
-    } catch (error) {
-      console.error('Newsletter error:', error);
-    }
-  };
-
-  if (submitted) {
-    return (
-      <div className="mt-4 p-4 bg-green-900/20 border border-green-800 text-green-400 font-mono text-sm">
-        <div className="flex items-center mb-1">
-          <Check size={16} className="mr-2" />
-          <span className="font-bold uppercase tracking-wider">Confirmed</span>
-        </div>
-        <p className="text-xs">You are on the list.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-2 text-left">
-      <h4 className="text-text font-serif italic text-lg mb-4">The Call Sheet</h4>
-      <p className="mb-4 text-xs font-mono text-text-muted uppercase tracking-wide">Get casting calls & news.</p>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <label htmlFor="newsletter-email" className="sr-only">Email Address</label>
-        <input
-          id="newsletter-email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="EMAIL ADDRESS"
-          required
-          className="w-full px-4 py-3 bg-background border border-border focus:border-primary outline-none text-text placeholder-text-muted text-xs font-mono uppercase tracking-widest transition-all"
-        />
-        <Button size="sm" type="submit" variant="outline" className="w-full border-border hover:border-text">
-          Subscribe
-        </Button>
-      </form>
-    </div>
-  );
-};
-
 // Navigation items type
 export default function App() {
   const [filmGrainEnabled, toggleFilmGrain] = useToggle(true);
+  const footerRef = useRef<HTMLDivElement>(null);
 
   // Main layout wrapped with accessibility features
   return (
@@ -373,8 +355,9 @@ export default function App() {
               </Routes>
             </Suspense>
           </main>
-          <Footer />
-          <StickyDonateBar />
+          <div ref={footerRef}><Footer /></div>
+          <StickyDonateBar footerRef={footerRef} />
+          <BackToTop />
           <CookieConsent />
           <Analytics />
         </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 import { Linkedin, Mail } from 'lucide-react';
 import { Button } from '../components/Button';
@@ -77,6 +78,10 @@ function mapSanityBoardMember(m: SanityBoardMember): BoardMember {
 
 // ─── Board page ───────────────────────────────────────────────────────────────
 export const Board: React.FC = () => {
+  usePageMeta(
+    'Board of Directors — Rebuilt Village',
+    'Meet the board of directors of Rebuilt Village. Our nonprofit leadership guides strategy, accountability, and mission impact.'
+  );
     const [boardMembers, setBoardMembers] = useState<BoardMember[]>(FALLBACK_BOARD);
 
     useEffect(() => {

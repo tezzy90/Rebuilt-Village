@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      port: 5173,
-      host: '0.0.0.0',
+      port: 5174,
+      host: true,
       allowedHosts: true,
       // Proxy API calls to Firebase emulators in development
       proxy: useEmulators

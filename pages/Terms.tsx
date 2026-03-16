@@ -1,7 +1,12 @@
 import React from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { Section } from '../components/Section';
 
 export const Terms: React.FC = () => {
+  usePageMeta(
+    'Terms of Service — Rebuilt Village',
+    'The terms and conditions governing your use of the Rebuilt Village website and services.'
+  );
     return (
         <>
             <Section bg="black" className="pt-32 pb-0">
