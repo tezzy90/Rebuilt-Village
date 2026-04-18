@@ -119,4 +119,15 @@ Any step goes wrong: `git reset --hard release/pre-debloat-v1`. Requires explici
 
 ## Notes and decisions made this phase
 
-<add notes here as you go>
+- Sanity branch chosen at step 4: shim-and-delete (not full removal, not deferred). 7 files imported from Sanity; service layer was already isolated to 2 files. Service files rewritten as no-op shims; pages render from existing FALLBACK arrays. `/sanity` and `/studio` deleted; `@sanity/client` and `@sanity/image-url` removed from package.json. `@portabletext/react` retained for Phase 2 reuse.
+- API path convention captured as ADR-007 during step 8. The original CLAUDE.md spec said camelCase (`/api/sendEmail`); shipped frontend, Vite proxy, Stripe Dashboard, and ROADMAP all use kebab-case. Kebab-case wins; ADR-007 documents the convention going forward.
+- Stripe API version drift surfaced and fixed during step 3 verification. Bumped from `2024-12-18.acacia` to `2025-02-24.acacia` to match `stripe@17.7.0` types. Type-level only; no behavioral change.
+- Duplicate `<Analytics />` render found during Phase 1 verification (index.tsx:27 and App.tsx:362). Removed the App.tsx render. Would have inflated GA pageviews 2x in production, with downstream risk to Google Ad Grants conversion-tracking review.
+
+## Backlog (deferred to a future cleanup pass or Phase 2)
+
+- App.tsx still contains 200 lines of dead inline `Programs` and `Contact` components (lines ~123-319). Pre-existing; the live routes lazy-import from `/pages/Programs` and `/pages/Contact`. The Sanity shim commit was the natural moment to delete; out of scope for the strict Phase 1 commit. The unreachable inline `Programs` is what keeps `urlFor` imported in App.tsx.
+- `pages/PostDetail.tsx` still imports `PortableText` and renders `<PortableText value={post.body} />`. With the shim, `getPostBySlug` returns `null` so the render branch is unreachable. Add a comment noting the import is held for Phase 2 FireCMS reuse.
+- Em dash slipped into commit message for `66df7f4` ("No structural changes - Tailwind class swaps only"). Cannot fix without history rewrite. Accept as one-time miss; convention reinforced going forward.
+- Em dashes also present in active-plan.md step text added by `cfcb2eb`. Lower visibility than commit message; sweep at end of Phase 2.
+- DEPLOYMENT.md post-deploy checklist (line ~135) lists wrong files for the EIN placeholder swap. Lists `DonateSuccess.tsx` and `stripeWebhook.ts`; CLAUDE.md canonical four are `pages/Donate.tsx`, `index.html`, `components/Footer.tsx`, `functions/src/handlers/createCheckoutSession.ts`. Pre-existing; will trip the operator when the real EIN arrives. Fix in the EIN swap session (Phase 3).

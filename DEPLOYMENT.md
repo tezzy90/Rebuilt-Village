@@ -1,6 +1,6 @@
 # Rebuilt Village — GCP Deployment Guide
 
-Stack: **Firebase Hosting** (SPA) + **Cloud Functions v2** (API) + **Cloud Build** (CI/CD)
+Stack: **Firebase Hosting** (SPA) + **Cloud Functions v2** (API) + **GitHub Actions** (CI/CD)
 
 ---
 
@@ -36,9 +36,6 @@ firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
 
 # Resend
 firebase functions:secrets:set RESEND_API_KEY
-
-# Optional: Sanity token (for private datasets)
-firebase functions:secrets:set SANITY_API_TOKEN
 ```
 
 Set these environment variables (non-secret, set in `.env.local` for dev):

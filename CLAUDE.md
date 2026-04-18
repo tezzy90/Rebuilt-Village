@@ -51,11 +51,9 @@ These apply to Claude's output in chat, code comments, commit messages, and PR d
 ## Known gotchas
 
 - `firebase.json` rewrites map kebab-case `/api/*` URLs to camelCase Cloud Function exports: `/api/send-email` → `sendEmail`, `/api/create-checkout-session` → `createCheckoutSession`, `/api/stripe-webhook` → `stripeWebhook`, `/api/project-balances` → `getProjectBalances`. See ADR-007 for the URL/export naming convention. Keep the catch-all `**` → `/index.html` rewrite last; order matters.
-- Two Sanity folders exist at `/sanity` and `/studio`. Both are being deleted in Phase 1.
-- `sketch.svg` at the root is a leftover potrace output from the Google AI Studio scaffold. Unreferenced. Delete with the `potrace` dependency.
+- Sanity is shimmed: `services/sanityClient.ts` and `services/sanityService.ts` return empty/null. Pages render from their hardcoded FALLBACK arrays. Phase 2 swaps the shim for Firestore queries when FireCMS ships.
 - The hero image is currently an Unsplash URL, which is a copyright and brand risk. It must be replaced with an original Rebuilt Village asset before launch.
 - The hero video path `/assets/video/village-story-v1.mp4` points to a file that does not exist. Either add the real file or remove the reference.
-- The ViewfinderNav swallows the logo visually. Phase 1 includes a logo size bump and clearer separation from the ImpactTicker row.
 
 ## Verification expectations
 
