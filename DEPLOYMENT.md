@@ -37,9 +37,6 @@ firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
 # Resend
 firebase functions:secrets:set RESEND_API_KEY
 
-# Gemini
-firebase functions:secrets:set GEMINI_API_KEY
-
 # Optional: Sanity token (for private datasets)
 firebase functions:secrets:set SANITY_API_TOKEN
 ```

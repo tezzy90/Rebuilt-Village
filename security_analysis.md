@@ -4,11 +4,6 @@ This document outlines the security measures implemented and the projected costs
 
 ## 1. Security Architecture
 
-### Gemini API (AI StorySpark)
-- **Mechanism**: Proxied via a Vercel Serverless Function (`/api/generate-story`).
-- **Security**: The `GEMINI_API_KEY` is never exposed to the client. It resides in Vercel's environment variables and is only accessible during the server-side execution of the function.
-- **Access Control**: Currently allows requests from the deployed domain.
-
 ### Email Services (Resend)
 - **Mechanism**: Proxied via a Vercel Serverless Function (`/api/send-email`).
 - **Security**: The `RESEND_API_KEY` is kept server-side. Form validation is performed before transmission.
@@ -32,7 +27,6 @@ We have prioritized services with generous free tiers to keep operational costs 
 | **Vercel** | Hosting & Serverless | 100GB Bandwidth / 1M Executions | **$0.00** |
 | **Sanity CMS** | Content Management | 500k API Requests / 5GB Assets | **$0.00** |
 | **Resend** | Transactional Email | 3,000 emails/month | **$0.00** |
-| **Gemini API**| AI StorySpark | 60 requests/min (Free tier) | **$0.00** |
 | **GitHub** | Code Repository | Unlimited Public/Private | **$0.00** |
 | **Google Analytics**| Tracking | Unlimited (Standard) | **$0.00** |
 | **TOTAL** | | | **$0.00 / mo** |
