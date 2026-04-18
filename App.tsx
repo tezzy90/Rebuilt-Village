@@ -1,7 +1,6 @@
 import { Check } from 'lucide-react';
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Route, Routes, Link } from 'react-router-dom';
-import { Analytics } from './components/Analytics';
 import { Button } from './components/Button';
 import { CookieConsentBanner as CookieConsent } from './components/CookieConsent';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -359,7 +358,6 @@ export default function App() {
           <StickyDonateBar footerRef={footerRef} />
           <BackToTop />
           <CookieConsent />
-          <Analytics />
         </div>
       </ThemeProvider>
     </ErrorBoundary>

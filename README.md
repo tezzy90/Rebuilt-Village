@@ -25,7 +25,7 @@ Rebuilt-Village/
 │       └── scratchpad.md               # Throwaway notes
 └── .github/
     └── workflows/
-        └── deploy.yml                  # GitHub Actions to replace cloudbuild.yaml
+        └── deploy.yml                  # GitHub Actions build + deploy workflow
 ```
 
 ## Installation

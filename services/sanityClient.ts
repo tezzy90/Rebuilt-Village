@@ -1,16 +1,22 @@
-import { createClient } from '@sanity/client';
-import imageUrlBuilder from '@sanity/image-url';
+// Phase 1 shim. Keeps the urlFor() call sites in pages and App.tsx compiling
+// without pulling in @sanity/client or @sanity/image-url. Phase 2 deletes this
+// file when FireCMS ships and images move to Firebase Storage.
 
-export const client = createClient({
-    projectId: import.meta.env.VITE_SANITY_PROJECT_ID || 'your-project-id',
-    dataset: import.meta.env.VITE_SANITY_DATASET || 'production',
-    useCdn: true, // set to `false` to bypass the edge cache
-    apiVersion: '2023-05-03', // use current date (YYYY-MM-DD) to target the latest API version
-    // token: process.env.SANITY_SECRET_TOKEN, // Only if you want to update content with the client
-});
+interface ImageUrlStub {
+  width(n: number): ImageUrlStub;
+  height(n: number): ImageUrlStub;
+  auto(mode: string): ImageUrlStub;
+  format(fmt: string): ImageUrlStub;
+  url(): string;
+}
 
-const builder = imageUrlBuilder(client);
-
-export function urlFor(source: any) {
-    return builder.image(source);
+export function urlFor(source: unknown): ImageUrlStub {
+  const stub: ImageUrlStub = {
+    width: () => stub,
+    height: () => stub,
+    auto: () => stub,
+    format: () => stub,
+    url: () => (typeof source === 'string' ? source : ''),
+  };
+  return stub;
 }

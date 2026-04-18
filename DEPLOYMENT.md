@@ -1,6 +1,6 @@
 # Rebuilt Village — GCP Deployment Guide
 
-Stack: **Firebase Hosting** (SPA) + **Cloud Functions v2** (API) + **Cloud Build** (CI/CD)
+Stack: **Firebase Hosting** (SPA) + **Cloud Functions v2** (API) + **GitHub Actions** (CI/CD)
 
 ---
 
@@ -36,12 +36,6 @@ firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
 
 # Resend
 firebase functions:secrets:set RESEND_API_KEY
-
-# Gemini
-firebase functions:secrets:set GEMINI_API_KEY
-
-# Optional: Sanity token (for private datasets)
-firebase functions:secrets:set SANITY_API_TOKEN
 ```
 
 Set these environment variables (non-secret, set in `.env.local` for dev):
@@ -85,24 +79,19 @@ firebase deploy --only hosting --project rebuilt-village-prod
 
 ---
 
-## 5. CI/CD via Cloud Build
+## 5. CI/CD via GitHub Actions
 
-```bash
-# Enable Cloud Build API
-gcloud services enable cloudbuild.googleapis.com --project rebuilt-village-prod
+Continuous deployment is wired via `.github/workflows/deploy.yml`. On push to
+`main` the workflow runs type-check, builds the frontend, and deploys to the
+`live` channel on Firebase Hosting. On pull requests it deploys a preview
+channel (7-day expiry) and comments the URL on the PR.
 
-# Connect your GitHub repo in Cloud Build console:
-# console.cloud.google.com/cloud-build/triggers
+Required GitHub repo secret: `FIREBASE_SERVICE_ACCOUNT_REBUILT_VILLAGE_WEB`.
+Generate it from a service account in the Firebase project with
+`roles/firebase.hostingAdmin` and `roles/firebaseauth.admin`, then paste the
+JSON into GitHub repo Settings → Secrets and variables → Actions.
 
-# Grant Cloud Build SA the Firebase Admin role:
-gcloud projects add-iam-policy-binding rebuilt-village-prod \
-  --member="serviceAccount:$(gcloud projects describe rebuilt-village-prod --format='value(projectNumber)')@cloudbuild.gserviceaccount.com" \
-  --role="roles/firebase.admin"
-
-# Store Firebase CI token as Secret Manager secret
-firebase login:ci  # generates token
-gcloud secrets create firebase-ci-token --data-file=- <<< "THE_TOKEN"
-```
+No Cloud Build setup required.
 
 ---
 

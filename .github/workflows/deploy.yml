@@ -35,6 +35,14 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      - name: Install functions dependencies
+        working-directory: functions
+        run: npm ci
+
+      - name: Type check functions
+        working-directory: functions
+        run: npm run build
+
       - name: Build main site
         run: npm run build
 
