@@ -328,14 +328,14 @@ export const ViewfinderNav: React.FC = () => {
         className={[
           // Slide from top-8 (below ticker) to top-0 (ticker gone) as user scrolls
           scrolled ? 'fixed top-0 left-0 right-0 z-50' : 'fixed top-8 left-0 right-0 z-50',
-          'transition-all duration-500',
+          'transition-all duration-500 motion-reduce:transition-none border-t border-primary/15',
           transparent
             ? 'bg-transparent border-b border-transparent'
             : 'bg-brand-black/95 backdrop-blur-md border-b border-primary/12 shadow-xl',
         ].join(' ')}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-[72px] md:h-24">
 
             {/* ── Logo ───────────────────────────────────────────────────── */}
             <Link
@@ -348,21 +348,21 @@ export const ViewfinderNav: React.FC = () => {
               <img
                 src="/assets/brand/logo.png"
                 alt="Rebuilt Village Logo"
-                className="h-9 md:h-11 w-auto object-contain bg-brand-black"
+                className="h-12 md:h-14 w-auto object-contain bg-brand-black"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
               {/* Text wordmark — shown alongside or as fallback */}
               <div className="flex flex-col leading-none">
                 <span
                   className={[
-                    'font-display font-semibold uppercase tracking-[0.18em] text-xs md:text-sm',
+                    'font-display font-semibold uppercase tracking-[0.18em] text-sm md:text-base',
                     'transition-colors duration-300 group-hover:text-primary',
                     transparent ? 'text-white' : 'text-primary',
                   ].join(' ')}
                 >
                   Rebuilt Village
                 </span>
-                <span className="hidden sm:block font-mono text-[8px] text-text-muted/50 uppercase tracking-[0.25em] mt-0.5">
+                <span className="hidden sm:block font-mono text-[9px] text-text-muted/50 uppercase tracking-[0.25em] mt-1">
                   Rebuilding Community Through Art
                 </span>
               </div>
@@ -451,7 +451,7 @@ export const ViewfinderNav: React.FC = () => {
                   transparent ? 'text-white/80 hover:text-white' : 'text-text-muted hover:text-text',
                 ].join(' ')}
               >
-                <Menu size={22} aria-hidden="true" />
+                <Menu size={20} aria-hidden="true" />
               </button>
             </div>
           </div>
