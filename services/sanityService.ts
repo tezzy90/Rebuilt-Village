@@ -1,7 +1,10 @@
-import { client } from './sanityClient';
+// Phase 1 shim. Returns empty data; pages fall back to their hardcoded arrays.
+// Phase 2 replaces this with Firestore fetches once FireCMS ships and the
+// page-level FALLBACK arrays are migrated to Firestore documents.
+
 import { Event } from '../types';
 
-// ─── Sanity document interfaces ───────────────────────────────────────────────
+// ─── Sanity document interfaces (retained for page imports) ───────────────────
 
 export interface SanityProgram {
     _id: string;
@@ -57,70 +60,6 @@ export interface SanityTeamMember {
     }>;
 }
 
-// ─── Mappers ──────────────────────────────────────────────────────────────────
-
-export function mapSanityEvent(e: SanityEvent): Event {
-    const d = new Date(e.date + 'T00:00:00');
-    return {
-        id: e._id,
-        title: e.title,
-        date: e.date,
-        dateEnd: e.dateEnd,
-        day: String(d.getDate()).padStart(2, '0'),
-        month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
-        year: String(d.getFullYear()),
-        time: e.time,
-        location: e.location,
-        description: e.description,
-        type: e.type,
-        featured: e.featured ?? false,
-        registrationUrl: e.registrationUrl,
-        sponsoredBy: e.sponsoredBy,
-        tags: e.tags,
-    };
-}
-
-// ─── Queries ──────────────────────────────────────────────────────────────────
-
-export const getPrograms = async (): Promise<SanityProgram[]> => {
-    return await client.fetch(`*[_type == "program"] | order(title asc)`);
-};
-
-export const getPosts = async (): Promise<SanityPost[]> => {
-    return await client.fetch(
-        `*[_type == "post"] | order(publishedAt desc) {
-            _id, title, slug, excerpt, category, author, mainImage, publishedAt, seo
-        }`
-    );
-};
-
-export const getPostBySlug = async (slug: string): Promise<SanityPost> => {
-    return await client.fetch(
-        `*[_type == "post" && slug.current == $slug][0] {
-            _id, title, slug, excerpt, category, author, mainImage, publishedAt, body, seo
-        }`,
-        { slug }
-    );
-};
-
-export const getEvents = async (): Promise<Event[]> => {
-    const raw: SanityEvent[] = await client.fetch(
-        `*[_type == "event"] | order(date asc) {
-            _id, title, date, dateEnd, time, location, description,
-            type, featured, registrationUrl, sponsoredBy, tags
-        }`
-    );
-    return raw.map(mapSanityEvent);
-};
-
-export const getTeamMembers = async (): Promise<SanityTeamMember[]> => {
-    return await client.fetch(
-        `*[_type == "teamMember" && active == true] | order(order asc) {
-            _id, name, role, bio, headshot, order, active, socialLinks
-        }`
-    );
-};
-
 export interface SanityBoardMember {
     _id: string;
     name: string;
@@ -156,21 +95,18 @@ export interface SanityProgramFull {
     active: boolean;
 }
 
-export const getBoardMembers = async (): Promise<SanityBoardMember[]> => {
-    return await client.fetch(
-        `*[_type == "boardMember" && active == true] | order(order asc) {
-            _id, name, role, bio, headshot, order, active,
-            linkedIn, email, committees, termStart, termEnd
-        }`
-    );
-};
+// ─── Query shims ──────────────────────────────────────────────────────────────
 
-export const getProgramsFull = async (): Promise<SanityProgramFull[]> => {
-    return await client.fetch(
-        `*[_type == "program" && active == true] | order(title asc) {
-            _id, title, slug, shortLabel, description, details, category,
-            ageGroup, schedule, location, cost, highlights,
-            enrollmentUrl, image, partnerInstitution, featured, active
-        }`
-    );
-};
+export const getPrograms = async (): Promise<SanityProgram[]> => [];
+
+export const getPosts = async (): Promise<SanityPost[]> => [];
+
+export const getPostBySlug = async (_slug: string): Promise<SanityPost | null> => null;
+
+export const getEvents = async (): Promise<Event[]> => [];
+
+export const getTeamMembers = async (): Promise<SanityTeamMember[]> => [];
+
+export const getBoardMembers = async (): Promise<SanityBoardMember[]> => [];
+
+export const getProgramsFull = async (): Promise<SanityProgramFull[]> => [];

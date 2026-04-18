@@ -43,7 +43,6 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             motion: ['framer-motion'],
-            sanity: ['@sanity/client', '@sanity/image-url'],
             ui: ['lucide-react', '@headlessui/react'],
           },
         },
