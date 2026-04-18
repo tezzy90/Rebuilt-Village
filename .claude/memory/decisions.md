@@ -57,3 +57,11 @@ Format: short ADR (Architecture Decision Record). Keep each entry under 15 lines
 ---
 
 <add new ADRs below this line, most recent at the bottom>
+
+## ADR-007: Kebab-case API paths, camelCase function exports
+
+**Date:** 2026-04-18
+**Status:** Accepted
+**Context:** The initial CLAUDE.md and PRD specified camelCase API paths, but the shipped frontend, Vite proxy, Stripe Dashboard webhook, and ROADMAP all use kebab-case URLs. The mismatch was noticed during Phase 1 step 8 when adding firebase.json rewrites.
+**Decision:** Kebab-case for URL paths (`/api/send-email`), camelCase for Cloud Function export names (`sendEmail`). Firebase rewrites bridge the two. This matches ecosystem conventions (URLs kebab, code camel) and avoids a Stripe Dashboard reconfiguration plus six-file code change.
+**Consequences:** Firebase rewrite `source` and `function` values differ by convention. When adding new endpoints, use kebab for the URL and camel for the export.

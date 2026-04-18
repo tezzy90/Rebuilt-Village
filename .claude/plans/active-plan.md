@@ -81,7 +81,7 @@ Grep `index.html`, `public/`, `src/`, `package.json` for `sketch.svg` and `potra
 
 ### 8. Fix `firebase.json` rewrites
 
-Add rewrites for `/api/sendEmail`, `/api/createCheckoutSession`, `/api/stripeWebhook`, `/api/projectBalances` to their Cloud Functions. Keep catch-all `/index.html` rewrite last.
+Add rewrites for `/api/send-email`, `/api/create-checkout-session`, `/api/stripe-webhook`, `/api/project-balances` to their Cloud Function exports (`sendEmail`, `createCheckoutSession`, `stripeWebhook`, `getProjectBalances` respectively). Keep catch-all `**` → `/index.html` rewrite last; order matters. See ADR-007 for the URL/export naming convention.
 
 `/api/draftThankYou` intentionally omitted; that function does not exist yet (future Givebutter integration). Add the rewrite when the function ships.
 

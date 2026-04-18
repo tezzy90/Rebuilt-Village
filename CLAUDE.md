@@ -50,7 +50,7 @@ These apply to Claude's output in chat, code comments, commit messages, and PR d
 
 ## Known gotchas
 
-- `firebase.json` rewrites currently only route to `/index.html`. They must also rewrite `/api/sendEmail`, `/api/createCheckoutSession`, `/api/stripeWebhook`, `/api/projectBalances`, and `/api/draftThankYou` to Cloud Functions. This is a Phase 1 fix.
+- `firebase.json` rewrites map kebab-case `/api/*` URLs to camelCase Cloud Function exports: `/api/send-email` → `sendEmail`, `/api/create-checkout-session` → `createCheckoutSession`, `/api/stripe-webhook` → `stripeWebhook`, `/api/project-balances` → `getProjectBalances`. See ADR-007 for the URL/export naming convention. Keep the catch-all `**` → `/index.html` rewrite last; order matters.
 - Two Sanity folders exist at `/sanity` and `/studio`. Both are being deleted in Phase 1.
 - `sketch.svg` at the root is a leftover potrace output from the Google AI Studio scaffold. Unreferenced. Delete with the `potrace` dependency.
 - The hero image is currently an Unsplash URL, which is a copyright and brand risk. It must be replaced with an original Rebuilt Village asset before launch.
