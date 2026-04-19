@@ -1,133 +1,166 @@
 # Active Plan
 
-**Phase:** 1 (Debloat & Consolidate)
+**Phase:** 2 (FireCMS Standup & Content Migration)
 **Owner:** Cortez
-**Started:** 2026-04-18
-**Target completion:** 2026-04-25
+**Started:** 2026-04-19
+**Target completion:** 2026-05-03
+**PRD reference:** Section 8, Phase 2
 
 Update this file at the start of each phase. Claude Code reads it to understand what you're working on right now. When you finish a phase, archive this file to `.claude/plans/archive/phase-N-<name>.md` and write a fresh active-plan.md for the next phase.
 
-Phase 0 prep tasks are archived at `.claude/plans/archive/phase-0-prep.md`. They continue in parallel with Phase 1; Phase 1 is not blocked on Phase 0 completion.
+Phase 1 (Debloat & Consolidate) archived at `.claude/plans/archive/phase-1-debloat.md`. Phase 0 prep tasks remain at `.claude/plans/archive/phase-0-prep.md`; open items there (real EIN, original hero asset, program metrics confirmation) still continue in parallel.
 
 ---
 
 ## Preconditions
 
-- Green build baseline confirmed: `npm run build` exits 0 on `8b98259`.
-- `release/pre-debloat-v1` tag created on current HEAD (step 1). Must exist before any deletion steps.
-- Phase 0 tasks may run in parallel. The only Phase 1 blocker is nothing; EIN is a Phase 3 concern.
+- Phase 1 and Phase 1.5 merged to `main` and deployed to production (current HEAD: `214ffa1`).
+- Sanity is shimmed (ADR-002); `services/sanityService.ts` returns empty data; pages render from hardcoded `FALLBACK_*` arrays. Phase 2 replaces both.
+- Firebase project `rebuilt-village-web` exists and has Firestore in Native mode enabled. If not, enable before step 1.
+- Google Workspace admin access for Cortez to invite Tony, Jess, Amanda to the admin FireCMS app. If Phase 0 email creation is still open (`hello@`, `donate@`, `grants@`, `board@`, `admin@`), not a Phase 2 blocker but Phase 2 step 4 depends on at minimum Tony/Jess/Amanda having a Google identity we can whitelist.
+- Original hero asset from founder is NOT a Phase 2 blocker for the FireCMS standup steps (1–6). It blocks only step 7 (Unsplash hero replacement); step 7 can ship in a separate commit once the asset lands.
+- Real EIN is a Phase 3 concern; not blocking.
 
 ## Steps
 
 ### 1. Tag rollback anchor
 
-`git tag release/pre-debloat-v1 && git push origin release/pre-debloat-v1`
+`git tag release/pre-firecms-v1 && git push origin release/pre-firecms-v1`. Must exist before any Firestore writes or hosting-site additions.
 
-### 2. Delete Vercel `/api/` endpoints
+### 2. Enable Firestore collections and write security rules
 
-Remove `api/generate-story.ts` and `api/send-email.ts` per ADR-001. Cloud Functions v2 is the new home.
+Canonical collection list per `CLAUDE.md`: `events`, `teamMembers`, `boardMembers`, `posts`, `programs`, `sponsors`, `donors`, `gifts`, `grants`, `donorProjects`. Phase 2 populates the first six (content collections); `donors`, `gifts`, `grants`, `donorProjects` are already written by Cloud Functions and stay as-is.
 
-- Verify `functions/src/handlers/sendEmail.ts` exists. If not, port first.
-- Before removing `@vercel/node`: grep `package.json` to confirm it is actually listed. Only edit `package.json` if the dep is present. If absent, log as no-op.
+a. Draft `firestore.rules` with role-based access:
+  - Public read on `events`, `teamMembers`, `boardMembers`, `posts`, `programs`, `sponsors`, `donorProjects` (site reads these).
+  - Admin write on all collections (`role == 'admin'` via custom claims).
+  - Editor write on content collections only (`role == 'editor'`), read-only on `donors`, `gifts`, `grants`.
+  - Authenticated read on `donors`, `gifts`, `grants` restricted to admins.
 
-### 3. Remove StorySpark end-to-end
+b. Define document schemas (TypeScript interfaces in a shared `types/firestore.ts`): each interface matches the FALLBACK shape in the corresponding page plus a `_updatedAt` server timestamp.
 
-Broadened grep across the repo excluding `node_modules`, `.git`, `dist`.
+c. Deploy rules to the emulator first, run the emulator test suite (per CLAUDE.md safety rule, never modify Firestore rules without emulator test). Only after emulator green, deploy to production.
 
-a. Filename / identifier references: `generate-story`, `generateStory`, `StorySpark`, `story_spark`, `STORY_SPARK`.
+Verification: `firebase emulators:exec --only firestore "npm run test:rules"` exits 0. `firebase deploy --only firestore:rules` exits 0 (requires explicit confirmation per CLAUDE.md safety).
 
-b. Import/export statements for the handler: `import.*generate-story`, `from.*generate-story`, `export.*generateStory`, `require.*generate-story`, including `../api/generate-story` and `/api/generate-story`.
+### 3. Stand up FireCMS admin app at admin.rebuiltvillage.org
 
-c. Gemini API key: `GEMINI_API_KEY`, `GOOGLE_AI_API_KEY`, `@google/generative-ai`, `@google/genai`. If StorySpark is the only consumer, remove from `.env.example`, `package.json`, `functions/.env*.example`, and docs. If another feature uses Gemini, leave plumbing and only remove StorySpark call sites.
+Use the `firecms-builder` subagent for the heavy lifting. Invoke proactively for this step.
 
-d. UI components / buttons: `fetch.*generate-story`, `axios.*generate-story`, `api/generate-story`, `<StorySpark`, `StorySparkButton`. Remove component files, router entries, nav links, page sections.
+a. Create a new Firebase Hosting site named `admin-rebuiltvillage` targeted at `admin.rebuiltvillage.org`.
 
-e. Types: confirm `STORY_SPARK` is absent from `types.ts`.
+b. Bootstrap a FireCMS v3+ self-hosted project in a new `/admin` directory at the repo root. Keep it a separate Vite build (independent `package.json`, `tsconfig.json`, build script).
 
-f. Documentation: update only `ROADMAP.md` and `security_analysis.md` where StorySpark is described as a live feature. Do NOT touch `CLAUDE.md` or `.claude/agents/*.md` — those mentions are deliberate guardrails instructing agents never to reintroduce StorySpark. ADR-004 in `.claude/memory/decisions.md` stays as the historical record.
+c. Wire Firebase Auth with Google sign-in provider only. Whitelist emails: `cortez@321work.com`, Tony's email, Jess's email, Amanda's email. Reject all others with a clear "access denied" screen.
 
-g. Verify: final grep. Expected matches limited to `CLAUDE.md` (guardrail list), `.claude/agents/*.md` (guardrails), and `.claude/memory/decisions.md` (ADR-004). Zero matches in source, `ROADMAP.md`, or `security_analysis.md`.
+d. Add `admin` target to `firebase.json` hosting array so `firebase deploy --only hosting:admin` deploys only the admin site. Keep the main site deploy (`hosting:rebuilt-village-web`) unchanged.
 
-### 4. Sanity removal — staged based on import graph
+e. Configure Cloudflare DNS: `admin.rebuiltvillage.org` CNAME to the Firebase Hosting target for the admin site.
 
-Per ADR-002, `/sanity` and `/studio` are to be deleted. But the build currently emits a 100 KB `sanity-*.js` chunk, so imports exist in `src/`.
+Verification: admin site loads without console errors; Google sign-in rejects a non-whitelisted test account; accepted account lands in the empty FireCMS dashboard.
 
-a. Audit import graph first. Greps scoped to `src/`:
-  - `from ['"]@sanity/client['"]`
-  - `from ['"]@sanity/image-url['"]`
-  - `sanityClient`
-  - `sanityService`
-  - `urlFor`
-  - `import.*from ['"].*sanity`
+### 4. Define FireCMS collection schemas
 
-b. Report findings to Cortez before proceeding. Decision branches:
-  - **Shallow (1-2 files, simple array fetches)**: replace with local stub returning hardcoded data. Delete `/sanity` and `/studio`. Remove `@sanity/*` deps from `package.json`.
-  - **Deeper (image transforms, portable text, deep integration)**: leave a minimal shim in `src/services/sanityService.ts` returning hardcoded data. Delete `/sanity` and `/studio` contents. Remove `@sanity/client`/`@sanity/image-url` only if the shim no longer needs them.
-  - **Very deep or risky**: defer directory deletion to Phase 2 alongside the FireCMS standup. Mark step partial; continue with remaining Phase 1 steps.
+Use the `firecms-schema` skill from `.claude/skills/firecms-schema/`. Apply the canonical patterns documented there: image refs to Firebase Storage, slug fields, server timestamps, references, roles.
 
-c. Do not execute any deletion under step 4 before Cortez confirms the branch.
+Collections to define in FireCMS:
+- `events` (date, dateEnd, time, location, description, type, featured, registrationUrl, sponsoredBy, tags)
+- `teamMembers` (name, role, bio, headshot, order, active, socialLinks)
+- `boardMembers` (name, role, bio, headshot, order, active, linkedIn, email, committees, termStart, termEnd)
+- `posts` (title, slug, excerpt, category, author, mainImage, publishedAt, body (rich text), seo)
+- `programs` (title, slug, shortLabel, description, details, category, ageGroup, schedule, location, cost, highlights, enrollmentUrl, image, partnerInstitution, featured, active)
+- `sponsors` (name, tier, logo, url, order, active)
 
-### 5. Delete `cloudbuild.yaml`
+Rich-text (`posts.body`) uses FireCMS's rich-text editor; on the frontend, the existing `@portabletext/react` dependency handles the rendered blocks (retained from Phase 1 shim decision for exactly this purpose).
 
-Per ADR-005. Grep `.github/workflows/`, `README.md`, `package.json`, `docs/` for `cloudbuild`. Confirm no active Cloud Build triggers reference this file.
+Verification: FireCMS admin UI lists all six collections; opening each shows the defined field inspector without console errors.
 
-### 6. ~~Inline page extraction~~ — REMOVED
+### 5. Role-based permissions in FireCMS
 
-Already done. `App.tsx:28-29` uses `lazy()` imports of `./pages/Programs` and `./pages/Contact`. ROADMAP Phase 6 corroborates.
+a. Set custom claims via a one-off Admin SDK script: Cortez and Tony get `role: 'admin'`, Jess and Amanda get `role: 'editor'`.
 
-### 7. Delete `sketch.svg` and `potrace` dependency
+b. Wire FireCMS's built-in permissions API to read `customClaims.role` on the authenticated user. Map `admin` to full CRUD on all collections; map `editor` to CRUD on the six content collections and read-only on `donors`, `gifts`, `grants`.
 
-Grep `index.html`, `public/`, `src/`, `package.json` for `sketch.svg` and `potrace`. Confirm zero references. Remove file and devDependency.
+c. Verify by signing in as each of the four test accounts (or simulated with custom claims in emulator) and confirming the permitted actions.
 
-### 8. Fix `firebase.json` rewrites
+Verification: editor account cannot see write controls on `donors`; admin account can write to all six content collections and read the three sensitive ones.
 
-Add rewrites for `/api/send-email`, `/api/create-checkout-session`, `/api/stripe-webhook`, `/api/project-balances` to their Cloud Function exports (`sendEmail`, `createCheckoutSession`, `stripeWebhook`, `getProjectBalances` respectively). Keep catch-all `**` → `/index.html` rewrite last; order matters. See ADR-007 for the URL/export naming convention.
+### 6. Migrate FALLBACK arrays into Firestore
 
-`/api/draftThankYou` intentionally omitted; that function does not exist yet (future Givebutter integration). Add the rewrite when the function ships.
+Use the `cms-migrator` subagent. Invoke proactively for this step.
 
-Validate with `firebase emulators:start`: hitting a rewritten path should route to the local function.
+a. Write a migration script at `scripts/migrate-fallbacks-to-firestore.ts` that reads each page's `FALLBACK_*` array and writes to the corresponding Firestore collection with deterministic doc IDs.
 
-### 9. Nav/logo Phase 1 polish
+b. Run against the emulator first; verify shape matches FireCMS expectations; iterate until schema and data align.
 
-Per CLAUDE.md known-gotchas: bump logo size in `ViewfinderNav.tsx`, add visual separation from `ImpactTicker` row. Browser screenshot before/after for verification.
+c. Run against production Firestore. Script must be idempotent (re-running does not duplicate documents).
+
+d. Swap `services/sanityService.ts` from its Phase 1 shim (returns `[]`/`null`) to Firestore queries. Keep the same function signatures so page imports do not change. Wire a 60-second client cache (same pattern as `projectBalancesService.ts`).
+
+e. Delete the `FALLBACK_*` arrays from `pages/About.tsx`, `pages/Board.tsx`, `pages/Programs.tsx`, `pages/Events.tsx`. Firestore is now the single source of truth.
+
+f. Replace `services/sanityClient.ts` `urlFor` stub with a Firebase Storage URL helper that returns the Storage download URL for a given reference. Keep the fluent chainable interface so existing call sites do not change.
+
+Verification: `npm run build` exits 0. Each of the six site routes (`/`, `/about`, `/board`, `/programs`, `/events`, `/blog`) renders from Firestore data; editing a document in FireCMS updates the site within cache TTL (60s).
+
+### 7. Replace Unsplash hero image with original asset
+
+Blocked on founder capturing the asset. When delivered:
+
+a. Upload the asset to Firebase Storage under `public/hero/` with a versioned filename (e.g. `hero-v1.jpg`).
+
+b. Update the hero component to reference the Storage URL (or use the new `urlFor` helper). Drop the Unsplash URL.
+
+c. Verify license is clear (original work by Rebuilt Village, not purchased stock with unclear commercial rights).
+
+Verification: homepage hero loads the new asset; DevTools Network tab shows Firebase Storage origin, not `images.unsplash.com`.
+
+### 8. End-to-end content edit test
+
+Jess or Amanda signs into `admin.rebuiltvillage.org`, edits a test post's title, saves. Within 60 seconds the change appears on `rebuiltvillage.org/blog/<slug>` without any code deploy.
+
+This is the Phase 2 acceptance signal: content can be managed without a developer in the loop.
 
 ## Acceptance criteria
 
-- `release/pre-debloat-v1` tag exists on `origin`.
-- Zero matches for `generate-story`, `generateStory`, `STORY_SPARK`, `cloudbuild`, `sketch.svg`, `potrace` in source code under `src/`, `functions/src/`, `pages/`, `components/`. StorySpark matches permitted in: `CLAUDE.md`, `.claude/agents/*.md`, `.claude/memory/decisions.md`, `ROADMAP.md` (historical), and the plan itself.
-- `/api/` directory absent.
-- `cloudbuild.yaml` absent.
-- `sketch.svg` absent.
-- Sanity removal state matches the branch chosen in step 4b.
-- `firebase.json` rewrites route 4 `/api/*` paths (`sendEmail`, `createCheckoutSession`, `stripeWebhook`, `projectBalances`) to Cloud Functions. `draftThankYou` not present.
-- `npm run build` exits 0; bundle size drops proportional to the Sanity branch taken.
+- `release/pre-firecms-v1` tag exists on `origin`.
+- `firestore.rules` deployed; emulator suite passes; role-based access verified for both admin and editor roles.
+- FireCMS admin app deployed at `admin.rebuiltvillage.org`; all four team members can sign in; non-whitelisted accounts are rejected.
+- All six content collections (`events`, `teamMembers`, `boardMembers`, `posts`, `programs`, `sponsors`) populated in Firestore.
+- `services/sanityService.ts` queries Firestore; Phase 1 shim empty-returns are gone.
+- Page-level `FALLBACK_*` arrays deleted from `About.tsx`, `Board.tsx`, `Programs.tsx`, `Events.tsx`.
+- `services/sanityClient.ts` `urlFor` returns real Firebase Storage URLs.
+- Hero image is an original Rebuilt Village asset in Firebase Storage, not Unsplash (or step 7 explicitly deferred with a dated note in this plan).
+- `npm run build` exits 0.
 - `cd functions && npm run build` exits 0.
-- Emulator test: hitting `/api/sendEmail` routes to the local function.
-- Logo visible and separated from ticker row; screenshot confirmed.
+- End-to-end test: editor account edits a document in FireCMS and sees the change on the live site within 60 seconds.
 
 ## Rollback
 
-Any step goes wrong: `git reset --hard release/pre-debloat-v1`. Requires explicit user confirmation per CLAUDE.md.
+Any step goes wrong: `git reset --hard release/pre-firecms-v1`. Requires explicit user confirmation per CLAUDE.md. Firestore data rollback is separate: keep a dated export (`gcloud firestore export`) right before step 6's production migration; restore from that export if the migration corrupts data.
 
 ## Deferred to later phases
 
-- FireCMS standup and Sanity data migration: Phase 2.
-- Hero asset replacement: Phase 2 (blocked on founder asset capture).
-- `/api/draftThankYou` rewrite: ship alongside Givebutter thank-you function.
-- Ad Grants application: Phase 4.
-- Legal review of Terms/Privacy: Phase 6.
+- Givebutter CRM integration and nightly sync Cloud Function: Phase 3.
+- Stripe nonprofit rate application: Phase 3.
+- Real EIN swap across the four canonical locations: Phase 3.
+- Ad Grants application (site must be content-complete and policy-compliant first): Phase 4.
+- WIF migration for GitHub Actions auth (see Backlog from Phase 1): Phase 3 or Phase 4, before Ad Grants launch.
+- Legal review of Terms and Privacy: Phase 6.
+- Performance and SEO polish pass: Phase 5 or Phase 6.
+
+## Backlog from Phase 1
+
+Items discovered or deferred during Phase 1 that are not in scope for Phase 2's primary goals but should be tracked:
+
+- **[RVL-1](https://linear.app/321work/issue/RVL-1)**: 9 low-severity `firebase-admin` transitive vulnerabilities. Fixable only via a breaking major downgrade to firebase-admin v10. Revisit when firebase-admin v13 ships or when npm overrides can pin the chain cleanly.
+- **[RVL-2](https://linear.app/321work/issue/RVL-2)**: Align Node runtime across local dev (22), Cloud Functions engines (20), and GitHub Actions runner (20). Consolidate on Node 22 when firebase-functions SDK formally recommends it.
+- **WIF migration**: Replace the long-lived `FIREBASE_SERVICE_ACCOUNT_REBUILT_VILLAGE_WEB` GitHub secret with Workload Identity Federation before Phase 4 Ad Grants launch. Long-lived service account keys are an audit liability for a nonprofit receiving Google grant program scrutiny.
+- **GitHub Actions duplicate preview job**: two `Deploy preview` checks run in parallel on every PR (the Firebase action posts its own check alongside the workflow job). Cosmetic but noisy. Consolidate or suppress the duplicate.
+- **Node 20 deprecation on GitHub Actions runners**: GitHub removes Node 20 from runners on September 16, 2026. Covered operationally by RVL-2, but the hard deprecation date makes this a dated backlog item, not an open-ended one.
+- **Dead inline code in `App.tsx`**: ~200 lines of inline `Programs` and `Contact` components (pre-existing; live routes already lazy-import from `/pages`). Code-reviewer flagged during Phase 1; deferred because out of strict Phase 1 scope. Phase 2 naturally overlaps since we rewrite those pages against Firestore.
+- **`DEPLOYMENT.md` post-deploy EIN checklist lists wrong files**: Lists `DonateSuccess.tsx` and `stripeWebhook.ts`; CLAUDE.md canonical four are `pages/Donate.tsx`, `index.html`, `components/Footer.tsx`, `functions/src/handlers/createCheckoutSession.ts`. Fix during Phase 3 EIN swap session when the operator is actually using the checklist.
 
 ## Notes and decisions made this phase
 
-- Sanity branch chosen at step 4: shim-and-delete (not full removal, not deferred). 7 files imported from Sanity; service layer was already isolated to 2 files. Service files rewritten as no-op shims; pages render from existing FALLBACK arrays. `/sanity` and `/studio` deleted; `@sanity/client` and `@sanity/image-url` removed from package.json. `@portabletext/react` retained for Phase 2 reuse.
-- API path convention captured as ADR-007 during step 8. The original CLAUDE.md spec said camelCase (`/api/sendEmail`); shipped frontend, Vite proxy, Stripe Dashboard, and ROADMAP all use kebab-case. Kebab-case wins; ADR-007 documents the convention going forward.
-- Stripe API version drift surfaced and fixed during step 3 verification. Bumped from `2024-12-18.acacia` to `2025-02-24.acacia` to match `stripe@17.7.0` types. Type-level only; no behavioral change.
-- Duplicate `<Analytics />` render found during Phase 1 verification (index.tsx:27 and App.tsx:362). Removed the App.tsx render. Would have inflated GA pageviews 2x in production, with downstream risk to Google Ad Grants conversion-tracking review.
-
-## Backlog (deferred to a future cleanup pass or Phase 2)
-
-- App.tsx still contains 200 lines of dead inline `Programs` and `Contact` components (lines ~123-319). Pre-existing; the live routes lazy-import from `/pages/Programs` and `/pages/Contact`. The Sanity shim commit was the natural moment to delete; out of scope for the strict Phase 1 commit. The unreachable inline `Programs` is what keeps `urlFor` imported in App.tsx.
-- `pages/PostDetail.tsx` still imports `PortableText` and renders `<PortableText value={post.body} />`. With the shim, `getPostBySlug` returns `null` so the render branch is unreachable. Add a comment noting the import is held for Phase 2 FireCMS reuse.
-- Em dash slipped into commit message for `66df7f4` ("No structural changes - Tailwind class swaps only"). Cannot fix without history rewrite. Accept as one-time miss; convention reinforced going forward.
-- Em dashes also present in active-plan.md step text added by `cfcb2eb`. Lower visibility than commit message; sweep at end of Phase 2.
-- DEPLOYMENT.md post-deploy checklist (line ~135) lists wrong files for the EIN placeholder swap. Lists `DonateSuccess.tsx` and `stripeWebhook.ts`; CLAUDE.md canonical four are `pages/Donate.tsx`, `index.html`, `components/Footer.tsx`, `functions/src/handlers/createCheckoutSession.ts`. Pre-existing; will trip the operator when the real EIN arrives. Fix in the EIN swap session (Phase 3).
+<add notes here as you go>
