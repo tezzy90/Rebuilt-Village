@@ -31,3 +31,6 @@ functions/lib/
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code worktrees (session-local, never committed)
+.claude/worktrees/
